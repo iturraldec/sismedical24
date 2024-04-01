@@ -1,0 +1,5 @@
+{
+    "require": {
+      "watana/watana-api-php": "1.0.0"
+    }
+  }
