@@ -236,7 +236,7 @@ case 'administrador':  ?>
                                         <a href="ordenesmedicasg"> Órdenes Médicas </a>
                                     </li>
                                     <li>
-                                        <a href="criocauterizaciones"> Criocauterización </a>
+                                        <a href="criocauterizaciones"> Gestion de Procedimientos </a>
                                     </li>
                                     <li>
                                         <a href="colposcopias"> Colposcopias </a>
@@ -524,7 +524,7 @@ case 'secretaria': ?>
                                         <a href="ordenesmedicasg"> Órdenes Médicas </a>
                                     </li>
                                     <li>
-                                        <a href="criocauterizaciones"> Criocauterización </a>
+                                        <a href="criocauterizaciones"> Gestion de Procedimientos </a>
                                     </li>
                                     <li>
                                         <a href="colposcopias"> Colposcopias </a>
@@ -841,7 +841,7 @@ case 'enfermera': ?>
                                         <a href="ordenesmedicasg"> Órdenes Médicas </a>
                                     </li>
                                     <li>
-                                        <a href="criocauterizaciones"> Criocauterización </a>
+                                        <a href="criocauterizaciones"> Gestion de Procedimientos </a>
                                     </li>
                                     <li>
                                         <a href="colposcopias"> Colposcopias </a>
@@ -1134,7 +1134,7 @@ case 'medico': ?>
                                         <a href="ordenesmedicasg"> Órdenes Médicas </a>
                                     </li>
                                     <li>
-                                        <a href="criocauterizaciones"> Criocauterización </a>
+                                        <a href="criocauterizaciones"> Gestion de Procedimientos </a>
                                     </li>
                                     <li>
                                         <a href="colposcopias"> Colposcopias </a>
