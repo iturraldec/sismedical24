@@ -2394,7 +2394,6 @@ $.ajax({
 
 // FUNCION PARA ACTUALIZAR APERTURA
 function UpdateApertura(codapertura,modulo) {
-
   swal({
           title: "¿Estás seguro?", 
           text: "¿Estás seguro de Actualizar esta Apertura Médica?", 

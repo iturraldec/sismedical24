@@ -8284,6 +8284,8 @@ public function AperturasPorId()
 	aperturas.fechaapertura,
 	aperturas.codigo,
 	aperturas.modulo,
+	aperturas.talla,
+	aperturas.imc,
 	hojasevolutivas.codprocedimiento,
 	hojasevolutivas.procedimiento,
 	hojasevolutivas.motivoconsulta,
@@ -8494,7 +8496,9 @@ public function ActualizarAperturas()
 			." antecedentefarmacologico = ?, "
 			." antecedenteginecologico = ?, "
 			." historialgestacional = ?, "
-			." planificacionfamiliar = ? "
+			." planificacionfamiliar = ?, "
+			." talla = ?, "
+			." imc = ? "
 		    ." WHERE "
 		    ." codapertura = ?;
 		    ";
@@ -8508,8 +8512,10 @@ public function ActualizarAperturas()
 		$stmt->bindParam(7, $antecedentefarmacologico);
 		$stmt->bindParam(8, $antecedenteginecologico);
 		$stmt->bindParam(9, $historialgestacional);
-		$stmt->bindParam(10, $planificacionfamiliar);
-		$stmt->bindParam(11, $codapertura);			
+		$stmt->bindParam(10, $planificacionfamiliar);			
+		$stmt->bindParam(11, $talla);			
+		$stmt->bindParam(12, $imc);
+		$stmt->bindParam(13, $codapertura);
         
 		$enfermedadpaciente = limpiar($_POST["enfermedadpaciente"]);
 		$antecedentepaciente = limpiar($_POST["antecedentepaciente"]);
@@ -8518,11 +8524,15 @@ public function ActualizarAperturas()
 		$antecedentepatologico = limpiar($_POST["antecedentepatologico"]);
 		$antecedentequirurgico = limpiar($_POST["antecedentequirurgico"]);
 		$antecedentefarmacologico = limpiar($_POST["antecedentefarmacologico"]);
-        $antecedenteginecologico = limpiar(isset($_POST['antecedenteginecologico']) ? $_POST["antecedenteginecologico"] : "");
-        $historialgestacional = limpiar(isset($_POST['historialgestacional']) ? $_POST["historialgestacional"] : "");
-        $planificacionfamiliar = limpiar(isset($_POST['planificacionfamiliar']) ? $_POST["planificacionfamiliar"] : "");
+		$antecedenteginecologico = limpiar(isset($_POST['antecedenteginecologico']) ? $_POST["antecedenteginecologico"] : "");
+		$historialgestacional = limpiar(isset($_POST['historialgestacional']) ? $_POST["historialgestacional"] : "");
+		$planificacionfamiliar = limpiar(isset($_POST['planificacionfamiliar']) ? $_POST["planificacionfamiliar"] : "");
+		$talla = isset($_POST['talla']) ? $_POST["talla"] : null;
+		$imc = isset($_POST['imc']) ? $_POST["imc"] : null;
+	
 		$codapertura = limpiar(decrypt($_POST['codapertura']));
 	    $stmt->execute();
+
 	    ############################# ACTUALIZO APERTURA MEDICA #############################
 
 	    ############################# ACTUALIZO HOJA EVOLUTIVA #############################
@@ -8542,7 +8552,9 @@ public function ActualizarAperturas()
 			." dxpresuntivo = ?, "
 			." dxdefinitivo = ?, "
 			." origenenfermedad = ?, "
-			." tratamiento = ? "
+			." tratamiento = ?, "
+			." talla = ?, "
+			." imc = ? "
 			." WHERE "
 			." codprocedimiento = ?;
 			";
@@ -8563,16 +8575,18 @@ public function ActualizarAperturas()
 		$stmt->bindParam(14, $dxdefinitivo);
 		$stmt->bindParam(15, $origenenfermedad);
 		$stmt->bindParam(16, $tratamiento);
-		$stmt->bindParam(17, $codprocedimiento);
+		$stmt->bindParam(17, $talla);
+		$stmt->bindParam(18, $imc);
+		$stmt->bindParam(19, $codprocedimiento);
 			
 		$motivoconsulta = limpiar($_POST['motivoconsulta']);
 		$examenfisico = limpiar($_POST["examenfisico"]);
-        $fechacitologia = limpiar(isset($_POST['fechacitologia']) && $_POST['fechacitologia'] != "" ? date("Y-m-d",strtotime($_POST['fechacitologia'])) : "'0000-00-00'");
-        $embarazada = limpiar(isset($_POST['embarazada']) ? $_POST["embarazada"] : "");
-        $fechamestruacion = limpiar(isset($_POST['fechamestruacion']) ? date("Y-m-d",strtotime($_POST['fechamestruacion'])) : "0000-00-00");
-        $semanas = limpiar(isset($_POST['semanas']) ? $_POST['semanas'] : "");
-        $fechaparto = limpiar(isset($_POST['fechaparto']) ? date("Y-m-d",strtotime($_POST['fechaparto'])) : "0000-00-00");
-        $atenproced = limpiar(isset($_POST['atenproced']) ? $_POST['atenproced'] : "");
+		$fechacitologia = isset($_POST['fechacitologia']) && $_POST['fechacitologia'] != "" ? date("Y-m-d",strtotime($_POST['fechacitologia'])) : null;
+		$embarazada = limpiar(isset($_POST['embarazada']) ? $_POST["embarazada"] : "");
+		$fechamestruacion = isset($_POST['fechamestruacion']) ? date("Y-m-d",strtotime($_POST['fechamestruacion'])) : null;
+		$semanas = limpiar(isset($_POST['semanas']) ? $_POST['semanas'] : "");
+		$fechaparto = isset($_POST['fechaparto']) ? date("Y-m-d",strtotime($_POST['fechaparto'])) : null;
+		$atenproced = limpiar(isset($_POST['atenproced']) ? $_POST['atenproced'] : "");
 		$ta = limpiar($_POST["ta"]);
 		$temperatura = limpiar($_POST["temperatura"]);
 		$fc = limpiar($_POST["fc"]);
@@ -8580,32 +8594,37 @@ public function ActualizarAperturas()
 		$peso = limpiar($_POST["peso"]);
 		
 		################# DX PRESUNTIVO #################
-		$cont = 0;
+		$dxpresuntivo = null;
+		if(isset($_POST["presuntivo"]) && count($_POST["presuntivo"]) > 0) {
+			$cont = 0;
 	    $arrayBD = array();
-		$idciepresuntivo = $_POST["idciepresuntivo"];
 	    $presuntivo = $_POST["presuntivo"];
-	    $observacionpresuntivo = $_POST["observacionpresuntivo"];
 	    for($cont; $cont<count($_POST["presuntivo"]); $cont++):
-		$arrayBD[] = trim($idciepresuntivo[$cont]."/".$presuntivo[$cont]."/".$observacionpresuntivo[$cont]."\n");
+				$arrayBD[] = trim($presuntivo[$cont]."\n");
 	    endfor;
-		$dxpresuntivo = implode(",,",$arrayBD);
+			$dxpresuntivo = implode(",,",$arrayBD);
+		}
+		
 		################# DX PRESUNTIVO #################
 		
 		################# DX DEFINITIVO #################
-		$cont = 0;
+		$dxdefinitivo = null;
+		if(isset($_POST["definitivo"]) && count($_POST["definitivo"]) > 0) {
+			$cont = 0;
 	    $arrayBD = array();
-		$idciedefinitivo = $_POST["idciedefinitivo"];
 	    $definitivo = $_POST["definitivo"];
-	    $observaciondefinitivo = $_POST["observaciondefinitivo"];
 	    for($cont; $cont<count($_POST["definitivo"]); $cont++):
-		$arrayBD[] = trim($idciedefinitivo[$cont]."/".$definitivo[$cont]."/".$observaciondefinitivo[$cont]."\n");
+				$arrayBD[] = trim($definitivo[$cont]."\n");
 	    endfor;
-		$dxdefinitivo = implode(",,",$arrayBD);
-        ################# DX DEFINITIVO #################
+			$dxdefinitivo = implode(",,",$arrayBD);
+		}
+    ################# DX DEFINITIVO #################
 		
 		//$origenenfermedad = limpiar($_POST["origenenfermedad"]);
 		$origenenfermedad = "";
 		$tratamiento = limpiar($_POST["tratamiento"]);
+		$talla = isset($_POST['talla']) ? $_POST["talla"] : null;
+		$imc = isset($_POST['imc']) ? $_POST["imc"] : null;
 		$codprocedimiento = limpiar(decrypt($_POST['codapertura']));
 		$stmt->execute();
 	    ############################# ACTUALIZO HOJA EVOLUTIVA #############################

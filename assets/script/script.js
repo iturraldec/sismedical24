@@ -2547,22 +2547,6 @@ $('document').ready(function()
 });
 /*  FUNCION PARA VALIDAR REGISTRO HORARIOS DE MEDICOS */
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 /* FUNCION JQUERY PARA CARGA MASIVA DE PACIENTES */	 
 $('document').ready(function()
 { 						
@@ -3281,18 +3265,6 @@ $('document').ready(function()
 /*  FUNCION JQUERY PARA VALIDAR ACTUALIZACION DE CITAS */
 
 
-
-
-
-
-
-
-
-
-
-
-
-
 /*  FUNCION PARA VALIDAR REGISTRO DE APERTURA CONSULTORIO */	 	 
 $('document').ready(function()
 { 
@@ -3322,10 +3294,6 @@ $('document').ready(function()
 			antecedenteginecologico: { required: false },
 			historialgestacional: { required: false },
 			planificacionfamiliar: { required: false },
-			presuntivo: { required: true },
-			observacionpresuntivo: { required: true },
-			definitivo: { required: true },
-			observaciondefinitivo: { required: true },
 			tratamiento: { required: true },
 			remision: { required: false },
 			formula: { required: false },
@@ -3357,10 +3325,6 @@ $('document').ready(function()
 			antecedenteginecologico: { required: "Ingrese Antecedentes Ginecologicos" },
 			historialgestacional: { required: "Ingrese Historial Gestacional" },
 			planificacionfamiliar: { required: "Ingrese Planificaci&oacute;n Familiar" },
-			presuntivo: { required: "Ingrese Dx Presuntivo" },
-			observacionpresuntivo: { required: "Ingrese Observaci&oacute;n de Dx Presuntivo" },
-			definitivo: { required: "Ingrese Dx Definitivo" },
-			observaciondefinitivo: { required: "Ingrese Observaci&oacute;n de Dx Definitivo" },
 			tratamiento: { required: "Ingrese Conducta o Tratamiento" },
 			remision: { required: "Ingrese Remision del Paciente" },
 			formula: { required: "Ingrese Dx para F&oacute;rmula M&eacute;dica" },
@@ -3386,7 +3350,6 @@ $('document').ready(function()
 			return false;
 
 	    } else { 
-
 		$.ajax({
 
 		type : 'POST',
@@ -3404,7 +3367,7 @@ $('document').ready(function()
 			$("#btn-submit").attr('disabled', true);
 		},
 		success :  function(data)
-		{						
+		{	
 			if(data==1){
 
 				$("#save").fadeIn(1000, function(){
@@ -3555,9 +3518,7 @@ $('document').ready(function()
 			historialgestacional: { required: false },
 			planificacionfamiliar: { required: false },
 			presuntivo: { required: true },
-			observacionpresuntivo: { required: true },
 			definitivo: { required: true },
-			observaciondefinitivo: { required: true },
 			tratamiento: { required: true },
 			remision: { required: false },
 			formula: { required: false },
@@ -3589,10 +3550,6 @@ $('document').ready(function()
 			antecedenteginecologico: { required: "Ingrese Antecedentes Ginecologicos" },
 			historialgestacional: { required: "Ingrese Historial Gestacional" },
 			planificacionfamiliar: { required: "Ingrese Planificaci&oacute;n Familiar" },
-			presuntivo: { required: "Ingrese Dx Presuntivo" },
-			observacionpresuntivo: { required: "Ingrese Observaci&oacute;n de Dx Presuntivo" },
-			definitivo: { required: "Ingrese Dx Definitivo" },
-			observaciondefinitivo: { required: "Ingrese Observaci&oacute;n de Dx Definitivo" },
 			tratamiento: { required: "Ingrese Conducta o Tratamiento" },
 			remision: { required: "Ingrese Remision del Paciente" },
 			formula: { required: "Ingrese Dx para F&oacute;rmula M&eacute;dica" },
@@ -3626,7 +3583,7 @@ $('document').ready(function()
 			$("#btn-update").attr('disabled', true);
 		},
 		success :  function(data)
-		{						
+		{
 			if(data==1){
 
 				$("#save").fadeIn(1000, function(){
@@ -3795,10 +3752,6 @@ $('document').ready(function()
 			fr:{ required: "Ingrese FR" },
 			peso: { required: "Ingrese Peso" },
 			atenproced:{ required: "Ingrese Atencion o Procedimiento del Paciente" },
-			presuntivo: { required: "Ingrese Dx Presuntivo" },
-			observacionpresuntivo: { required: "Ingrese Observaci&oacute;n de Dx Presuntivo" },
-			definitivo: { required: "Ingrese Dx Definitivo" },
-			observaciondefinitivo: { required: "Ingrese Observaci&oacute;n de Dx Definitivo" },
 			tratamiento: { required: "Ingrese Conducta o Tratamiento" },
 			remision: { required: "Ingrese Remision del Paciente" },
 			formula: { required: "Ingrese Dx para F&oacute;rmula M&eacute;dica" },
@@ -3983,10 +3936,6 @@ $('document').ready(function()
 			fr: { required: true, },
 			peso: { required: true, },
 			atenproced: { required: true },
-			presuntivo: { required: true },
-			observacionpresuntivo: { required: true },
-			definitivo: { required: true },
-			observaciondefinitivo: { required: true },
 			tratamiento: { required: true },
 			remision: { required: false },
 			formula: { required: false },
@@ -4009,10 +3958,6 @@ $('document').ready(function()
 			fr:{ required: "Ingrese FR" },
 			peso: { required: "Ingrese Peso" },
 			atenproced:{ required: "Ingrese Atencion o Procedimiento del Paciente" },
-			presuntivo: { required: "Ingrese Dx Presuntivo" },
-			observacionpresuntivo: { required: "Ingrese Observaci&oacute;n de Dx Presuntivo" },
-			definitivo: { required: "Ingrese Dx Definitivo" },
-			observaciondefinitivo: { required: "Ingrese Observaci&oacute;n de Dx Definitivo" },
 			tratamiento: { required: "Ingrese Conducta o Tratamiento" },
 			remision: { required: "Ingrese Remision del Paciente" },
 			formula: { required: "Ingrese Dx para F&oacute;rmula M&eacute;dica" },
@@ -5579,10 +5524,6 @@ $('document').ready(function()
 			codmedico:{ required: "Seleccione Médico" },
 			motivoconsulta:{ required: "Por favor Ingrese Motivo de Consulta" },
 			atenproced:{ required: "Ingrese Atencion o Procedimiento del Paciente" },
-			presuntivo: { required: "Ingrese Dx Presuntivo" },
-			observacionpresuntivo: { required: "Ingrese Observaci&oacute;n de Dx Presuntivo" },
-			definitivo: { required: "Ingrese Dx Definitivo" },
-			observaciondefinitivo: { required: "Ingrese Observaci&oacute;n de Dx Definitivo" },
 			tratamiento: { required: "Ingrese Conducta o Tratamiento" },
 			remision: { required: "Ingrese Remision del Paciente" },
 			formula: { required: "Ingrese Dx para F&oacute;rmula M&eacute;dica" },
@@ -5774,9 +5715,6 @@ $('document').ready(function()
 			codmedico:{ required: "Seleccione Médico" },
 			motivoconsulta:{ required: "Por favor Ingrese Motivo de Consulta" },
 			atenproced:{ required: "Ingrese Atencion o Procedimiento del Paciente" },
-			presuntivo: { required: "Ingrese Dx Presuntivo" },
-			observacionpresuntivo: { required: "Ingrese Observaci&oacute;n de Dx Presuntivo" },
-			definitivo: { required: "Ingrese Dx Definitivo" },
 			observaciondefinitivo: { required: "Ingrese Observaci&oacute;n de Dx Definitivo" },
 			tratamiento: { required: "Ingrese Conducta o Tratamiento" },
 			remision: { required: "Ingrese Remision del Paciente" },
@@ -7370,8 +7308,6 @@ $('document').ready(function()
 			frecuencia_respiratoria: { required: "Ingrese Frecuencia Respiratoria" },
 			observaciones_examen: { required: "Ingrese Observaciones" },
 			observaciones_planes: { required: "Ingrese Observaciones" },
-			presuntivo: { required: "Ingrese Dx Presuntivo" },
-			definitivo: { required: "Ingrese Dx Definitivo" },
 			diagnostico: { required: "Ingrese Diagnostico" },
 			procedimientos: { required: "Ingrese Procedimientos" },
 			prescripciones: { required: "Ingrese Prescripciones" },
@@ -7514,8 +7450,8 @@ $('document').ready(function()
 				$("#medico_busqueda").val("");
 				$("#fecha_busqueda").val("");
 				$("#tabla").html('<tbody><tr><td><div class="form-group has-feedback"><label class="control-label">Dx Presuntivo: <span class="symbol required"></span></label><input type="hidden" name="idciepresuntivoingreso[]" id="idciepresuntivoingreso"/><input style="color:#000;font-weight:bold;" type="text" class="form-control" name="presuntivoingreso[]" id="presuntivoingreso" onKeyUp="this.value=this.value.toUpperCase(); autocompletarpresingreso(this.name);" placeholder="Ingrese Nombre de Dx para tu Búsqueda" title="Ingrese Dx Presuntivo" autocomplete="off"></div></td></tr></tbody>');
-                $("#tabla2").html('<tbody><tr><td><div class="form-group has-feedback"><label class="control-label">Dx Definitivo: <span class="symbol required"></span></label><input type="hidden" name="idciedefinitivoingreso[]" id="idciedefinitivoingreso"/><input style="color:#000;font-weight:bold;" type="text" class="form-control" name="definitivoingreso[]" id="definitivoingreso" onKeyUp="this.value=this.value.toUpperCase(); autocompletardefingreso(this.name);" placeholder="Ingrese Nombre de Dx para tu Búsqueda" title="Ingrese Dx Definitivo" autocomplete="off"></div></td></tr></tbody>');
-                $("#guarda").attr('disabled', true);
+				$("#tabla2").html('<tbody><tr><td><div class="form-group has-feedback"><label class="control-label">Dx Definitivo: <span class="symbol required"></span></label><input type="hidden" name="idciedefinitivoingreso[]" id="idciedefinitivoingreso"/><input style="color:#000;font-weight:bold;" type="text" class="form-control" name="definitivoingreso[]" id="definitivoingreso" onKeyUp="this.value=this.value.toUpperCase(); autocompletardefingreso(this.name);" placeholder="Ingrese Nombre de Dx para tu Búsqueda" title="Ingrese Dx Definitivo" autocomplete="off"></div></td></tr></tbody>');
+				$("#guarda").attr('disabled', true);
 				$("#agrega").attr('disabled', true);
 				$("#tablaTratamiento").html("");
 				cargarDientes("seccionDientes", "dientes.php", '', '0', '0');
@@ -7718,8 +7654,6 @@ $('document').ready(function()
 			frecuencia_respiratoria: { required: "Ingrese Frecuencia Respiratoria" },
 			observaciones_examen: { required: "Ingrese Observaciones" },
 			observaciones_planes: { required: "Ingrese Observaciones" },
-			presuntivo: { required: "Ingrese Dx Presuntivo" },
-			definitivo: { required: "Ingrese Dx Definitivo" },
 			diagnostico: { required: "Ingrese Diagnostico" },
 			procedimientos: { required: "Ingrese Procedimientos" },
 			prescripciones: { required: "Ingrese Prescripciones" },

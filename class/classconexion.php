@@ -5,7 +5,7 @@ class Db{
 	private $dbHost     = "localhost:3306";
     private $dbUsername = "root";
     private $dbPassword = "J1z01234_";
-    private $dbName     = "softmedical";
+    private $dbName     = "sismedical";
 	protected $p; 
 	protected $dbh; 
 	

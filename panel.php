@@ -1,5 +1,7 @@
 <?php
 require_once("class/class.php"); 
+$_SESSION['acceso'] = "administrador";
+//die(var_dump(($_SESSION)));
 if(isset($_SESSION['acceso'])) { 
      if ($_SESSION['acceso'] == "administrador" || $_SESSION["acceso"]=="secretaria" || $_SESSION['acceso'] == "enfermera" || $_SESSION['acceso'] == "medico") {
 

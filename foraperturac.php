@@ -216,7 +216,9 @@ exit;
 
      <?php  if (isset($_GET['numero'])) {
       
-      $reg = $tra->AperturasPorId(); ?>
+      $reg = $tra->AperturasPorId(); 
+    ?>
+      
       
     <form class="form-material" novalidate method="post" action="#" name="updateapertura" id="updateapertura" data-id="<?php echo $reg[0]["codapertura"] ?>" enctype="multipart/form-data">
         
@@ -380,6 +382,20 @@ exit;
                     <input class="form-control" type="text" name="peso" id="peso" onKeyUp="this.value=this.value.toUpperCase();" autocomplete="off" placeholder="Ingrese Peso" <?php if (isset($reg[0]['peso'])) { ?> value="<?php echo $reg[0]['peso']; ?>" <?php } ?> required="" aria-required="true">
                 </div> 
             </div>
+
+            <div class="col-md-3"> 
+                <div class="form-group has-feedback"> 
+                    <label class="control-label">Talla:</label> 
+                    <input class="form-control" type="numeric" name="talla" id="talla" placeholder="Ingrese Talla" <?php if (isset($reg[0]['talla'])) { ?> value="<?php echo $reg[0]['talla']; ?>" <?php } ?>>
+                </div> 
+            </div>
+
+            <div class="col-md-3"> 
+                <div class="form-group has-feedback"> 
+                    <label class="control-label">IMC = Peso/Talla</label> 
+                    <input class="form-control" type="numeric" name="imc" id="imc" <?php if (isset($reg[0]['imc'])) { ?> value="<?php echo $reg[0]['imc']; ?>" <?php } ?> readonly>
+                </div> 
+            </div>
         </div> 
 
 
@@ -475,17 +491,16 @@ exit;
             <table width="100%" id="tabla"><tr> 
             <td>
             <?php
-            if (isset($reg[0]['dxpresuntivo'])) {
-
+            if (isset($reg[0]['dxpresuntivo']) && strlen($reg[0]['dxpresuntivo']) > 0) {
             $explode = explode(",,",$reg[0]['dxpresuntivo']);
             for($cont=0; $cont<COUNT($explode); $cont++):
-            list($idciepresuntivo,$presuntivo,$observacionpresuntivo) = explode("/",$explode[$cont]);
+            list($presuntivo) = explode("/",$explode[$cont]);
             ?>
                 <div class="form-group has-feedback"> 
-                    <label class="control-label alert-link">Dx Presuntivo: <span class="symbol required"></span></label>
+                    <label class="control-label alert-link">Dx Presuntivo:</label>
                     <input type="hidden" name="idciepresuntivo[]<?php echo $cont; ?>" id="idciepresuntivo<?php echo $cont; ?>" value="<?php echo $idciepresuntivo; ?>"/>
                     <input style="color:#000;font-weight:bold;" type="text" class="form-control" name="presuntivo[]<?php echo $cont; ?>" id="presuntivo<?php echo $cont; ?>" onKeyUp="this.value=this.value.toUpperCase(); autocompletar(this.name);" value="<?php echo $presuntivo; ?>" placeholder="Ingrese Nombre de Dx para tu Busqueda" title="Ingrese Dx Presuntivo">
-                    <!-- <textarea class="form-control" name="observacionpresuntivo[]<?php echo $cont; ?>" id="observacionpresuntivo<?php echo $cont; ?>" onKeyUp="this.value=this.value.toUpperCase();" autocomplete="off" placeholder="Ingrese Observación de Dx Presuntivo" title="Ingrese Observación de Dx Presuntivo" rows="2" required="" aria-required="true"><?php echo $observacionpresuntivo; ?></textarea> -->
+                    <!-- <textarea class="form-control" name="observacionpresuntivo[]<?php echo $cont; ?>" id="observacionpresuntivo<?php echo $cont; ?>" onKeyUp="this.value=this.value.toUpperCase();" autocomplete="off" placeholder="Ingrese Observación de Dx Presuntivo" title="Ingrese Observación de Dx Presuntivo" rows="2"><?php echo $observacionpresuntivo; ?></textarea> -->
                 </div>
 
             <?php endfor; 
@@ -512,17 +527,17 @@ exit;
             <table width="100%" id="tabla2"><tr> 
             <td>
             <?php
-            if (isset($reg[0]['dxdefinitivo'])) {
+            if (isset($reg[0]['dxdefinitivo']) && strlen($reg[0]['dxdefinitivo']) > 0) {
 
             $explode = explode(",,",$reg[0]['dxdefinitivo']);
             for($cont=0; $cont<COUNT($explode); $cont++):
-            list($idciedefinitivo,$definitivo,$observaciondefinitivo) = explode("/",$explode[$cont]);    
+            list($definitivo) = explode("/",$explode[$cont]);    
             ?>
 
                 <div class="form-group has-feedback"> 
                     <label class="control-label alert-link">Dx Definitivo:</label>
                     <input type="hidden" name="idciedefinitivo[]<?php echo $cont; ?>" id="idciedefinitivo<?php echo $cont; ?>" value="<?php echo $idciedefinitivo; ?>"/>
-                    <input style="color:#000;font-weight:bold;" class="form-control" type="text" name="definitivo[]<?php echo $cont; ?>" id="definitivo<?php echo $cont; ?>" onKeyUp="this.value=this.value.toUpperCase(); autocompletar2(this.name);" value="<?php echo $definitivo; ?>" placeholder="Ingrese Nombre de Dx para tu Busqueda" title="Ingrese Dx Definitivo" required="" aria-required="true">
+                    <input style="color:#000;font-weight:bold;" class="form-control" type="text" name="definitivo[]<?php echo $cont; ?>" id="definitivo<?php echo $cont; ?>" onKeyUp="this.value=this.value.toUpperCase(); autocompletar2(this.name);" value="<?php echo $definitivo; ?>" placeholder="Ingrese Nombre de Dx para tu Busqueda" title="Ingrese Dx Definitivo">
                     <!-- <textarea class="form-control" name="observaciondefinitivo[]<?php echo $cont; ?>" id="observaciondefinitivo<?php echo $cont; ?>" onKeyUp="this.value=this.value.toUpperCase();" autocomplete="off" placeholder="Ingrese Observación de Dx Definitivo" title="Ingrese Observación de Dx Definitivo" rows="2" required="" aria-required="true"><?php echo $observaciondefinitivo; ?></textarea> -->
                 </div>
 
@@ -534,7 +549,7 @@ exit;
                     <label class="control-label alert-link">Dx Definitivo:</label>
                     <input type="hidden" name="idciedefinitivo[]" id="idciedefinitivo"/>
                     <input style="color:#000;font-weight:bold;" class="form-control" type="text" name="definitivo[]" id="definitivo" onKeyUp="this.value=this.value.toUpperCase(); autocompletar2(this.name);" placeholder="Ingrese Nombre de Dx para tu Busqueda" title="Ingrese Dx Definitivo">
-                    <!-- <textarea class="form-control" name="observaciondefinitivo[]" id="observaciondefinitivo" onKeyUp="this.value=this.value.toUpperCase();" autocomplete="off" placeholder="Ingrese Observación de Dx Definitivo" title="Ingrese Observación de Dx Definitivo" rows="2" required="" aria-required="true"></textarea> -->
+<!--                     <textarea class="form-control" name="observaciondefinitivo[]" id="observaciondefinitivo" onKeyUp="this.value=this.value.toUpperCase();" autocomplete="off" placeholder="Ingrese Observación de Dx Definitivo" title="Ingrese Observación de Dx Definitivo" rows="2" required="" aria-required="true"></textarea> -->
                 </div>
 
             <?php } ?>
@@ -752,9 +767,17 @@ exit;
     <script src="assets/js/app.js"></script>
     
     <script>
-        $(document).ready(function() {
-            App.init();
-        });
+    $(document).ready(function() {
+        App.init();
+
+        // calculo de talla
+        $( "#talla" ).on( "blur", function() {
+            let peso = $("#peso").val();
+            let talla = $("#talla").val();
+
+            $("#imc").val((peso / talla).toFixed(2));
+        } );
+    });
     </script>
     <script src="assets/js/custom.js"></script>
     <script src="plugins/dropify/dropify.min.js"></script>

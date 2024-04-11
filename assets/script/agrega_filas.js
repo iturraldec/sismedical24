@@ -177,7 +177,7 @@
     myNewRow = document.getElementById('tabla2').insertRow(-1);
     myNewRow.id=indiceFila;
     myNewCell=myNewRow.insertCell(-1);
-    myNewCell.innerHTML='<div class="form-group has-feedback"><label class="control-label alert-link">Dx Definitivo: <span class="symbol required"></span></label><input type="hidden" name="idciedefinitivoingreso[]'+cont+'" id="idciedefinitivoingreso'+cont+'"/><input style="color:#000;font-weight:bold;" type="text" class="form-control" name="definitivoingreso[]'+cont+'" id="definitivoingreso'+cont+'" onKeyUp="this.value=this.value.toUpperCase(); autocompletardefingreso(this.name);" placeholder="Ingrese Nombre de Dx para tu Búsqueda" title="Ingrese Dx Definitivo" autocomplete="off" required="" aria-required="true"></div>';
+    myNewCell.innerHTML='<div class="form-group has-feedback"><label class="control-label alert-link">Dx Definitivo: <span class="symbol required"></span></label><input type="hidden" name="idciedefinitivoingreso[]'+cont+'" id="idciedefinitivoingreso'+cont+'"/><input style="color:#000;font-weight:bold;" type="text" class="form-control" name="definitivoingreso[]'+cont+'" id="definitivoingreso'+cont+'" onKeyUp="this.value=this.value.toUpperCase(); autocompletardefingreso(this.name);" placeholder="Ingrese Nombre de Dx para tu Búsqueda" title="Ingrese Dx Definitivo" autocomplete="off"></div>';
     indiceFila++;
     }
 
@@ -229,7 +229,7 @@
     myNewRow = document.getElementById('tabla4').insertRow(-1);
     myNewRow.id=indiceFila;
     myNewCell=myNewRow.insertCell(-1);
-    myNewCell.innerHTML='<div class="form-group has-feedback"><label class="control-label alert-link">Dx Definitivo: <span class="symbol required"></span></label><input type="hidden" name="idciedefinitivoegreso[]'+cont+'" id="idciedefinitivoegreso'+cont+'"/><input style="color:#000;font-weight:bold;" type="text" class="form-control" name="definitivoegreso[]'+cont+'" id="definitivoegreso'+cont+'" onKeyUp="this.value=this.value.toUpperCase(); autocompletardefegreso(this.name);" placeholder="Ingrese Nombre de Dx para tu Búsqueda" title="Ingrese Dx Definitivo" autocomplete="off" required="" aria-required="true"></div>';
+    myNewCell.innerHTML='<div class="form-group has-feedback"><label class="control-label alert-link">Dx Definitivo: <span class="symbol required"></span></label><input type="hidden" name="idciedefinitivoegreso[]'+cont+'" id="idciedefinitivoegreso'+cont+'"/><input style="color:#000;font-weight:bold;" type="text" class="form-control" name="definitivoegreso[]'+cont+'" id="definitivoegreso'+cont+'" onKeyUp="this.value=this.value.toUpperCase(); autocompletardefegreso(this.name);" placeholder="Ingrese Nombre de Dx para tu Búsqueda" title="Ingrese Dx Definitivo" autocomplete="off" ></div>';
     indiceFila++;
     }
 
