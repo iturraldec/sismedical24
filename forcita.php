@@ -115,8 +115,7 @@ exit;
                     <div class="form-group has-feedback">
                         <label class="control-label">Seleccione Color: <span class="symbol required"></span></label>
                         <select style="color:#000;font-weight:bold;" name="color" id="color" class='form-control' required="" aria-required="true">
-                            <option value="">-- SELECCIONE --</option>
-                            <option style="color:#0071c5;" value="#0071c5">&#9724; Azul oscuro</option>
+                            <option style="color:#0071c5;" value="#0071c5" selected="selected">&#9724; Azul oscuro</option>
                             <option style="color:#40E0D0;" value="#40E0D0">&#9724; Turquesa</option>
                             <option style="color:#008000;" value="#008000">&#9724; Verde</option>                       
                             <option style="color:#FFD700;" value="#FFD700">&#9724; Amarillo</option>
@@ -361,19 +360,27 @@ exit;
     <script>
         $(document).ready(function() {
             App.init();
+
+            //
+            $("#ModalAdd").on("shown.bs.modal", function() {
+                $("#color").val("#0071c5");
+            });
         });
     </script>
+
+
+     <!-- Sweet-Alert -->
+     <script src="assets/js/sweetalert-dev.js"></script>
+    <!-- Sweet-Alert --> 
+
+    
     <script src="assets/js/custom.js"></script>
     
     <script src="plugins/font-icons/feather/feather.min.js"></script>
     <script type="text/javascript">
         feather.replace();
     </script>
-    <!-- END GLOBAL MANDATORY SCRIPTS -->
-
-    <!-- Sweet-Alert -->
-    <script src="assets/js/sweetalert-dev.js"></script>
-    <!-- Sweet-Alert -->  
+    <!-- END GLOBAL MANDATORY SCRIPTS --> 
     
     <!-- FullCalendar -->
     <script src='plugins/fullcalendar/moment.min.js'></script>

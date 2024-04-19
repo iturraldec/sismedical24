@@ -1986,7 +1986,6 @@ var codespecialidad = $("#codespecialidad").val();
 var codmedico = $("#codmedico").val();
 var dataString = $("#busquedacalendario").serialize();
 var url = 'calendario.php?Calendario_Secundario=si';
-
 $.ajax({
       type: "GET",
       url: url,

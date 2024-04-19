@@ -2935,27 +2935,10 @@ $('document').ready(function()
 /*  FUNCION PARA VALIDAR CARGAR DOCUMENTOS A PACIENTE */
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 /* FUNCION JQUERY PARA VALIDAR REGISTRO DE CITAS */	 	 
 $('document').ready(function()
 { 
+
 	/* validation */
 	$("#savecita").validate({
 		rules:
@@ -2978,7 +2961,6 @@ $('document').ready(function()
 		},
 	    errorElement: "span",
 		submitHandler: function(form) {
-
 		var data = $("#savecita").serialize();
 		var codsucursal = $('#sucursal').val();
 		var codmedico = $('#medico').val();
@@ -3116,6 +3098,7 @@ $('document').ready(function()
 			  }
 			}
 		});
+ 		
 		return false;
 	}
 	   /* form submit */

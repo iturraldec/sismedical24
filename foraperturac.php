@@ -41,7 +41,6 @@ exit;
     <link href="assets/css/elements/search.css" rel="stylesheet" type="text/css" />
     <link rel="stylesheet" type="text/css" href="plugins/dropify/dropify.min.css">
     <link href="assets/css/users/account-setting.css" rel="stylesheet" type="text/css" />
-    <link rel="stylesheet" href="assets/css/sweetalert.css">
     <link href="assets/css/components/custom-modal.css" rel="stylesheet" type="text/css" />
     <link href="assets/css/components/tabs-accordian/custom-tabs.css" rel="stylesheet" type="text/css" />
     <!--  END CUSTOM STYLE FILE  -->
@@ -765,6 +764,7 @@ exit;
     <script src="bootstrap/js/bootstrap.min.js"></script>
     <script src="plugins/perfect-scrollbar/perfect-scrollbar.min.js"></script>
     <script src="assets/js/app.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     
     <script>
     $(document).ready(function() {
@@ -790,10 +790,6 @@ exit;
     <script type="text/javascript">
         feather.replace();
     </script>
-
-    <!-- Sweet-Alert -->
-    <script src="assets/js/sweetalert-dev.js"></script>
-    <!-- Sweet-Alert -->  
 
     <!-- script jquery -->
     <script type="text/javascript" src="assets/script/titulos.js"></script>

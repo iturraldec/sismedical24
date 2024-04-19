@@ -1522,20 +1522,17 @@ $reg = $new->AperturasPorId();
 
   <tr>
     <td class="alert-link">
-    <?php 
-    $explode = explode(",,",utf8_decode(strtoupper($reg[0]['dxpresuntivo'])));
-    $a=1;
-    for($cont=0; $cont<COUNT($explode); $cont++):
-    list($idciepresuntivo,$presuntivo) = explode("/",$explode[$cont]);
-
-    if($idciepresuntivo==""){
-      echo "***********";
-    } else {
-    echo $a++. "). ".$presuntivo."<br>";
-    }
-    endfor;
-    ?>
-     </td>
+      <?php
+      if(isset($reg[0]['dxpresuntivo']) && !is_null($reg[0]['dxpresuntivo'])) {
+        $explode = explode(",,",utf8_decode(strtoupper($reg[0]['dxpresuntivo'])));
+        $a=1;
+        for($cont=0; $cont<COUNT($explode); $cont++):
+          list($presuntivo) = explode("/",$explode[$cont]);
+          echo $a++. "). ".$presuntivo."<br>";
+        endfor;
+      }
+      ?>
+    </td>
   </tr> 
 
   <tr>
@@ -1544,18 +1541,15 @@ $reg = $new->AperturasPorId();
 
   <tr>
     <td class="alert-link">
-    <?php 
-    $explode = explode(",,",utf8_decode(strtoupper($reg[0]['dxdefinitivo'])));
-    $a=1;
-    for($cont=0; $cont<COUNT($explode); $cont++):
-    list($idciedefinitivo,$definitivo) = explode("/",$explode[$cont]);
-
-    if($idciedefinitivo==""){
-      echo "***********";
-    } else {
-    echo $a++. "). ".$definitivo."<br>";
+    <?php
+    if(isset($reg[0]['dxdefinitivo']) && !is_null($reg[0]['dxdefinitivo'])) {
+      $explode = explode(",,",utf8_decode(strtoupper($reg[0]['dxdefinitivo'])));
+      $a=1;
+      for($cont=0; $cont<COUNT($explode); $cont++):
+        list($definitivo) = explode("/",$explode[$cont]);
+        echo $a++. "). ".$definitivo."<br>";
+      endfor;
     }
-    endfor;
     ?>
      </td>
   </tr>
