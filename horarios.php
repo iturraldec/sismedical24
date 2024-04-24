@@ -92,8 +92,8 @@ exit;
                 </button>
             </div>
 
-            <form class="form-material" novalidate method="post" action="#" name="savehorario" id="savehorario" enctype="multipart/form-data">
-
+            <form class="form-material" novalidate method="post" action="#" name="savehorario" id="savehorario">
+<!-- enctype="multipart/form-data"-->
             <div class="modal-body"><!-- modal-body -->
 
             <h5 class="card-subtitle text-dark alert-link"><i data-feather="search"></i> Búsqueda</h5><hr> 
@@ -335,7 +335,7 @@ exit;
     <script type="text/jscript">
     $('#horarios').append('<center><i data-feather="settings"></i> Por favor espere, cargando registros ......</center>').fadeIn("slow");
     setTimeout(function() {
-    $('#horarios').load("consultas?CargaHorarios=si");
+    $('#horarios').load("consultas.php?CargaHorarios=si");
      }, 200);
     </script>
     <!-- jQuery Noty-->

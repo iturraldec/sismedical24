@@ -359,6 +359,7 @@ exit;
     
     <script>
         $(document).ready(function() {
+            //
             App.init();
 
             //
@@ -394,14 +395,6 @@ exit;
     <script type="text/javascript" src="assets/script/validation.min.js"></script>
     <script type="text/javascript" src="assets/script/script.js"></script>
     <!-- script jquery -->
-
-    <!-- Calendario 
-    <link rel="stylesheet" href="assets/calendario/jquery-ui.css" />
-    <link href="plugins/autocomplete/autocomplete.css" rel="stylesheet" type="text/css" />
-    <script src="assets/calendario/jquery-ui.js"></script>
-    <script src="assets/script/jscalendario2.js"></script>
-    <script src="assets/script/autocompleto.js"></script>-->
-    <!-- Calendario -->
 
     <!-- Calendario -->
     <link rel="stylesheet" href="assets/calendario/jquery-ui.css" />

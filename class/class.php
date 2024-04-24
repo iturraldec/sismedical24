@@ -4437,29 +4437,6 @@ public function BuscarProfesionalxSucursal()
 ############################# FIN DE CLASE MEDICOS ################################
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 ############################# CLASE HORARIOS ##################################
 
 ############################ FUNCION REGISTRAR HORARIOS ##########################
@@ -4478,6 +4455,9 @@ public function RegistrarHorarios()
 	}
 
 	############## VERIFICO LOS DIAS REGISTRADOS #################
+	/*var_dump($_POST);
+	die("ANTES DE GRABAR!!!");
+*/
 	$sql = "SELECT
 	GROUP_CONCAT(dias SEPARATOR ',') AS dias_laborales
 	FROM horarios 
@@ -4487,12 +4467,13 @@ public function RegistrarHorarios()
 	{
 		$this->p[] = $row;
 	}
-	$days_laborales = explode(",", $row['dias_laborales']);
+	// CI $days_laborales = explode(",", $row['dias_laborales']);
 	$days = $_POST["dias"];
 	$current_date = date('Y-m-d H:i');
 	############## VERIFICO LOS DIAS REGISTRADOS #################
 
 	############## COMPARO LOS ARRAY DIAS #################
+	/* CI
 	foreach($days as $day => $num):
 		$nums = array_values($days);
 
@@ -4501,8 +4482,8 @@ public function RegistrarHorarios()
 			echo "3";
 		    exit;
 		} 
-
 	endforeach;
+	*/
 	############## COMPARO LOS ARRAY DIAS #################
 
 	###################### REGISTRO LOS DIAS ######################
@@ -4520,9 +4501,9 @@ public function RegistrarHorarios()
 			$codsucursal = limpiar(decrypt($_POST["codsucursal"]));
 			$codmedico = limpiar(decrypt($_POST['codmedico']));
 			$dias = limpiar($_POST["dias"][$i]);
-			//$dias = implode(",",$_POST["dias"]);
 			$hora_desde = limpiar($_POST["hora_desde"]);
 			$hora_hasta = limpiar($_POST["hora_hasta"]);
+
 			$stmt->execute();
 		} 
 	}
@@ -4828,12 +4809,16 @@ public function ActualizarHorarios()
 public function EliminarHorarios()
 {
 	self::SetNames();
-    if($_SESSION['acceso'] == "administrador" || $_SESSION["acceso"]=="secretaria") {
+  if($_SESSION['acceso'] == "administrador" || $_SESSION["acceso"]=="secretaria") {
 
-		$sql = "DELETE FROM horarios WHERE codhorario = ?";
+		$sql = "DELETE FROM horarios WHERE codmedico = ? AND hora_desde = ? AND hora_hasta = ?;";
 		$stmt = $this->dbh->prepare($sql);
-		$stmt->bindParam(1,$codhorario);
-		$codhorario = decrypt($_GET["codhorario"]);
+		$stmt->bindParam(1,$codmedico);
+		$stmt->bindParam(2,$desde);
+		$stmt->bindParam(3,$hasta);
+		$codmedico = $_GET["codmedico"];
+		$desde = $_GET["desde"];
+		$hasta = $_GET["hasta"];
 		$stmt->execute();
 
 		echo "1";
@@ -9712,37 +9697,35 @@ public function RegistrarHojasEvolutivas()
 	{
 
 		############################# REGISTRO DE HOJA EVOLUTIVA #############################
-		$query = "INSERT INTO hojasevolutivas values (null, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?); ";
+		$query = "INSERT INTO hojasevolutivas values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?); ";
 		$stmt = $this->dbh->prepare($query);
-		$stmt->bindParam(1, $codhoja);
-		$stmt->bindParam(2, $nrodocumento);
-		$stmt->bindParam(3, $codcita);
-		$stmt->bindParam(4, $codsucursal);
-		$stmt->bindParam(5, $codmedico);
-		$stmt->bindParam(6, $codpaciente);
-		$stmt->bindParam(7, $codprocedimiento);
-		$stmt->bindParam(8, $procedimiento);
-		$stmt->bindParam(9, $motivoconsulta);
-		$stmt->bindParam(10, $examenfisico);
-		$stmt->bindParam(11, $fechacitologia);
-		$stmt->bindParam(12, $embarazada);
-		$stmt->bindParam(13, $fechamestruacion);
-		$stmt->bindParam(14, $semanas);
-		$stmt->bindParam(15, $fechaparto);
-		$stmt->bindParam(16, $atenproced);
-		$stmt->bindParam(17, $ta);
-		$stmt->bindParam(18, $temperatura);
-		$stmt->bindParam(19, $fc);
-		$stmt->bindParam(20, $fr);
-		$stmt->bindParam(21, $peso);
-		$stmt->bindParam(22, $dxpresuntivo);
-		$stmt->bindParam(23, $dxdefinitivo);
-		$stmt->bindParam(24, $origenenfermedad);
-		$stmt->bindParam(25, $tratamiento);
-		$stmt->bindParam(26, $fechahoja);
-		$stmt->bindParam(27, $codigo);
-		$stmt->bindParam(28, $modulo);
-			
+		$stmt->bindParam(1, $num);
+		$stmt->bindParam(2, $codhoja);
+		$stmt->bindParam(3, $nrodocumento);
+		$stmt->bindParam(4, $codcita);
+		$stmt->bindParam(5, $codsucursal);
+		$stmt->bindParam(6, $codmedico);
+		$stmt->bindParam(7, $codpaciente);
+		$stmt->bindParam(8, $codprocedimiento);
+		$stmt->bindParam(9, $procedimiento);
+		$stmt->bindParam(10, $motivoconsulta);
+		$stmt->bindParam(11, $examenfisico);
+		$stmt->bindParam(12, $semanas);
+		$stmt->bindParam(13, $atenproced);
+		$stmt->bindParam(14, $ta);
+		$stmt->bindParam(15, $temperatura);
+		$stmt->bindParam(16, $fc);
+		$stmt->bindParam(17, $fr);
+		$stmt->bindParam(18, $peso);
+		$stmt->bindParam(19, $dxpresuntivo);
+		$stmt->bindParam(20, $dxdefinitivo);
+		$stmt->bindParam(21, $origenenfermedad);
+		$stmt->bindParam(22, $tratamiento);
+		$stmt->bindParam(23, $fechahoja);
+		$stmt->bindParam(24, $codigo);
+		$stmt->bindParam(25, $modulo);
+		
+		$codhoja = limpiar(decrypt($_POST["codhoja"]));
 		$codcita = limpiar(decrypt($_POST["codcita"]));
 		$codsucursal = limpiar(decrypt($_POST["sucursal_busqueda"]));
 		$codmedico = limpiar(decrypt($_POST["medico_busqueda"]));
@@ -9751,12 +9734,8 @@ public function RegistrarHojasEvolutivas()
 		$procedimiento = limpiar("HOJA EVOLUTIVA");
 		$motivoconsulta = limpiar($_POST['motivoconsulta']);
 		$examenfisico = limpiar($_POST["examenfisico"]);
-        $fechacitologia = limpiar(isset($_POST['fechacitologia']) && $_POST['fechacitologia'] != "" ? date("Y-m-d",strtotime($_POST['fechacitologia'])) : "'0000-00-00'");
-        $embarazada = limpiar(isset($_POST['embarazada']) ? $_POST["embarazada"] : "");
-        $fechamestruacion = limpiar(isset($_POST['fechamestruacion']) ? date("Y-m-d",strtotime($_POST['fechamestruacion'])) : "0000-00-00");
-        $semanas = limpiar(isset($_POST['semanas']) ? $_POST['semanas'] : "");
-        $fechaparto = limpiar(isset($_POST['fechaparto']) ? date("Y-m-d",strtotime($_POST['fechaparto'])) : "0000-00-00");
-        $atenproced = limpiar(isset($_POST['atenproced']) ? $_POST['atenproced'] : "");
+		$semanas = limpiar(isset($_POST['semanas']) ? $_POST['semanas'] : "");
+		$atenproced = limpiar(isset($_POST['atenproced']) ? $_POST['atenproced'] : "");
 		$ta = limpiar($_POST["ta"]);
 		$temperatura = limpiar($_POST["temperatura"]);
 		$fc = limpiar($_POST["fc"]);
@@ -9767,27 +9746,23 @@ public function RegistrarHojasEvolutivas()
 		$cont = 0;
 	    $arrayBD = array();
 		$idciepresuntivo = $_POST["idciepresuntivo"];
-	    $presuntivo = $_POST["presuntivo"];
-	    $observacionpresuntivo = $_POST["observacionpresuntivo"];
-	    for($cont; $cont<count($_POST["presuntivo"]); $cont++):
-		$arrayBD[] = trim($idciepresuntivo[$cont]."/".$presuntivo[$cont]."/".$observacionpresuntivo[$cont]."\n");
-	    endfor;
+		for($cont; $cont<count($_POST["presuntivo"]); $cont++):
+			$arrayBD[] = trim($idciepresuntivo[$cont]."/".$presuntivo[$cont]."\n");
+	  endfor;
 		$dxpresuntivo = implode(",,",$arrayBD);
 		################# DX PRESUNTIVO #################
 		
 		################# DX DEFINITIVO #################
 		$cont = 0;
-	    $arrayBD = array();
+	  $arrayBD = array();
 		$idciedefinitivo = $_POST["idciedefinitivo"];
-	    $definitivo = $_POST["definitivo"];
-	    $observaciondefinitivo = $_POST["observaciondefinitivo"];
-	    for($cont; $cont<count($_POST["definitivo"]); $cont++):
-		$arrayBD[] = trim($idciedefinitivo[$cont]."/".$definitivo[$cont]."/".$observaciondefinitivo[$cont]."\n");
-	    endfor;
+	  for($cont; $cont<count($_POST["definitivo"]); $cont++):
+			$arrayBD[] = trim($idciedefinitivo[$cont]."/".$definitivo[$cont]."\n");
+	  endfor;
 		$dxdefinitivo = implode(",,",$arrayBD);
         ################# DX DEFINITIVO #################
 		
-		$origenenfermedad = limpiar($_POST["origenenfermedad"]);
+		$origenenfermedad = isset($_POST["origenenfermedad"]) ? $_POST["origenenfermedad"] : null;
 		$tratamiento = limpiar($_POST["tratamiento"]);
 		$fechahoja = $fecha_hora;
 		$codigo = limpiar($_SESSION["codigo"]);
