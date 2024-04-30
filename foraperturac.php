@@ -776,7 +776,7 @@ exit;
             let peso = $("#peso").val();
             let talla = $("#talla").val();
 
-            $("#imc").val((peso / talla).toFixed(2));
+            $("#imc").val(Math.pow(peso / talla, 2).toFixed(2));
         });
 
         // grabar la apertura

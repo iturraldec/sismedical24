@@ -4455,54 +4455,28 @@ public function RegistrarHorarios()
 	}
 
 	############## VERIFICO LOS DIAS REGISTRADOS #################
-	/*var_dump($_POST);
-	die("ANTES DE GRABAR!!!");
-*/
-	$sql = "SELECT
-	GROUP_CONCAT(dias SEPARATOR ',') AS dias_laborales
-	FROM horarios 
-	WHERE codmedico = '".limpiar(decrypt($_POST['codmedico']))."'
-    AND codsucursal = '".limpiar(decrypt($_POST["codsucursal"]))."'";
-	foreach ($this->dbh->query($sql) as $row)
-	{
-		$this->p[] = $row;
-	}
-	// CI $days_laborales = explode(",", $row['dias_laborales']);
-	$days = $_POST["dias"];
-	$current_date = date('Y-m-d H:i');
-	############## VERIFICO LOS DIAS REGISTRADOS #################
+	$sql = "SELECT MAX(codhorario) as codhorario FROM horarios;";
+	$stmt = $this->dbh->query($sql);
+	$codhorario = $stmt->fetch(PDO::FETCH_ASSOC)['codhorario'] + 1;
+	$codsucursal = limpiar(decrypt($_POST["codsucursal"]));
+	$codmedico = limpiar(decrypt($_POST['codmedico']));
+	$hora_desde = limpiar($_POST["hora_desde"]);
+	$hora_hasta = limpiar($_POST["hora_hasta"]);
 
-	############## COMPARO LOS ARRAY DIAS #################
-	/* CI
-	foreach($days as $day => $num):
-		$nums = array_values($days);
-
-		if (in_array($num, $days_laborales) ) {
-
-			echo "3";
-		    exit;
-		} 
-	endforeach;
-	*/
-	############## COMPARO LOS ARRAY DIAS #################
-
+			
 	###################### REGISTRO LOS DIAS ######################
 	for($i=0;$i<count($_POST['dias']);$i++){  //recorro el array
 		if (!empty($_POST['dias'][$i])) {
 
-			$query = " INSERT INTO horarios values (null, ?, ?, ?, ?, ?);";
+			$query = " INSERT INTO horarios values (?, ?, ?, ?, ?, ?);";
 			$stmt = $this->dbh->prepare($query);
-			$stmt->bindParam(1, $codsucursal);
-			$stmt->bindParam(2, $codmedico);
-			$stmt->bindParam(3, $dias);
-			$stmt->bindParam(4, $hora_desde);
-			$stmt->bindParam(5, $hora_hasta);
-
-			$codsucursal = limpiar(decrypt($_POST["codsucursal"]));
-			$codmedico = limpiar(decrypt($_POST['codmedico']));
+			$stmt->bindParam(1, $codhorario);
+			$stmt->bindParam(2, $codsucursal);
+			$stmt->bindParam(3, $codmedico);
+			$stmt->bindParam(4, $dias);
+			$stmt->bindParam(5, $hora_desde);
+			$stmt->bindParam(6, $hora_hasta);
 			$dias = limpiar($_POST["dias"][$i]);
-			$hora_desde = limpiar($_POST["hora_desde"]);
-			$hora_hasta = limpiar($_POST["hora_hasta"]);
 
 			$stmt->execute();
 		} 
@@ -4527,7 +4501,7 @@ public function ListarHorarios()
 	horarios.dias,
 	horarios.hora_desde,
 	horarios.hora_hasta,
-	GROUP_CONCAT(dias SEPARATOR ',') AS dias_laborales,
+	GROUP_CONCAT(dias) AS dias_laborales,
 	medicos.docummedico,
 	medicos.cedmedico,
 	medicos.nommedico,
@@ -4563,8 +4537,8 @@ public function ListarHorarios()
 	LEFT JOIN documentos AS documentos2 ON sucursales.documsucursal = documentos2.coddocumento
 	WHERE horarios.codmedico = '".limpiar($_SESSION["codmedico"])."' 
 	AND horarios.codsucursal = '".limpiar($_SESSION["codsucursal"])."'
-	GROUP BY horarios.hora_desde, horarios.hora_hasta
-	ORDER BY horarios.codmedico, horarios.dias ASC";
+	GROUP BY horarios.codhorario, horarios.codsucursal, horarios.codmedico, horarios.hora_desde, horarios.hora_hasta;";
+	
 	foreach ($this->dbh->query($sql) as $row)
 	{
 		$this->p[] = $row;
@@ -4581,7 +4555,7 @@ public function ListarHorarios()
 	horarios.dias,
 	horarios.hora_desde,
 	horarios.hora_hasta,
-	GROUP_CONCAT(dias SEPARATOR ',') AS dias_laborales,
+	GROUP_CONCAT(dias) AS dias_laborales,
 	medicos.docummedico,
 	medicos.cedmedico,
 	medicos.nommedico,
@@ -4615,8 +4589,18 @@ public function ListarHorarios()
 	LEFT JOIN tbl_parroquia ON medicos.idparroquia = tbl_parroquia.idparroquia
 	LEFT JOIN sucursales ON horarios.codsucursal = sucursales.codsucursal 
 	LEFT JOIN documentos AS documentos2 ON sucursales.documsucursal = documentos2.coddocumento 
-	GROUP BY horarios.hora_desde, horarios.hora_hasta
-	ORDER BY horarios.codmedico, horarios.dias ASC";
+	GROUP BY horarios.codhorario, horarios.codsucursal, horarios.codmedico, horarios.hora_desde, horarios.hora_hasta;";
+
+	/*$sql = "SELECT horarios.codhorario, 
+						horarios.codsucursal, 
+						horarios.codmedico, 
+						horarios.hora_desde, 
+						horarios.hora_hasta,
+						group_concat(dias) as dias_loborales
+					FROM horarios
+					GROUP BY horarios.codhorario, horarios.codsucursal, horarios.codmedico, horarios.hora_desde, horarios.hora_hasta";
+	*/
+
 	foreach ($this->dbh->query($sql) as $row)
 	{
 		$this->p[] = $row;
@@ -4695,7 +4679,7 @@ public function HorariosPorId()
 public function ActualizarHorarios()
 {
 	self::SetNames();
-	if(empty($_POST["codhorario"]) or empty($_POST["codsucursal"]) or empty($_POST["codmedico"]) or empty($_POST["dias"]) or empty($_POST["hora_desde"]) or empty($_POST["hora_hasta"]) or empty($_POST["codsucursal"]))
+	if(empty($_POST["codhorario"]) or empty($_POST["codsucursal"]) or empty($_POST["codmedico"]) or empty($_POST["dias"]) or empty($_POST["hora_desde"]) or empty($_POST["hora_hasta"]))
 	{
 		echo "1";
 		exit;
@@ -4706,99 +4690,39 @@ public function ActualizarHorarios()
 		exit;
 	}
 
-	############## VERIFICO LOS DIAS REGISTRADOS #################
-	$sql = "SELECT
-	GROUP_CONCAT(dias SEPARATOR ',') AS dias_laborales
-	FROM horarios 
-	WHERE codmedico = '".limpiar(decrypt($_POST['codmedico']))."'
-    AND codsucursal = '".limpiar(decrypt($_POST["codsucursal"]))."'";
-	foreach ($this->dbh->query($sql) as $row)
-	{
-		$this->p[] = $row;
-	}
-	$days_laborales = explode(",", $row['dias_laborales']);
-	$days = $_POST["dias"];
-	$current_date = date('Y-m-d H:i');
-	############## VERIFICO LOS DIAS REGISTRADOS #################
-
-	############## COMPARO LOS ARRAY DIAS #################
-	/*foreach($days as $day => $num):
-		$nums = array_values($days);
-
-		if (in_array($num, $days_laborales) ) {
-
-			echo "3";
-		    exit;
-		} 
-
-	endforeach;*/
-	############## COMPARO LOS ARRAY DIAS #################
-
-	###################### ELIMINO LOS REGISTRO DE DIAS ######################
-	for($i=0;$i<count($_POST['dias']);$i++){  //recorro el array
-		if (!empty($_POST['dias'][$i])) {
-
-			$sql = "DELETE FROM horarios WHERE codsucursal = ? AND codmedico = ? AND dias = ?";
-			$stmt = $this->dbh->prepare($sql);
-			$stmt->bindParam(1,$codsucursal);
-			$stmt->bindParam(2,$codmedico);
-			$stmt->bindParam(3,$dias);
-
-			$codsucursal = decrypt($_POST["codsucursal"]);
-			$codmedico = decrypt($_POST["codmedico"]);
-			$dias = limpiar($_POST["dias"][$i]);
-			$stmt->execute();
-		} 
-	}
-	###################### ELIMINO LOS REGISTRO DE DIAS ######################
-
 	###################### ACTUALIZO LOS DIAS ######################
-	for($i=0;$i<count($_POST['dias']);$i++){  //recorro el array
-		if (!empty($_POST['dias'][$i])) {
-
-		    $query = " INSERT INTO horarios values (null, ?, ?, ?, ?, ?);";
-			$stmt = $this->dbh->prepare($query);
-			$stmt->bindParam(1, $codsucursal);
-			$stmt->bindParam(2, $codmedico);
-			$stmt->bindParam(3, $dias);
-			$stmt->bindParam(4, $hora_desde);
-			$stmt->bindParam(5, $hora_hasta);
-
-			$codsucursal = limpiar(decrypt($_POST["codsucursal"]));
-			$codmedico = limpiar(decrypt($_POST['codmedico']));
-			$dias = limpiar($_POST["dias"][$i]);
-			//$dias = implode(",",$_POST["dias"]);
-			$hora_desde = limpiar($_POST["hora_desde"]);
-			$hora_hasta = limpiar($_POST["hora_hasta"]);
-			$stmt->execute();
-		} 
-	}
-	###################### ACTUALIZO LOS DIAS ######################
-
-	/*$sql = " UPDATE horarios set "
-		." codsucursal = ?, "
-		." codmedico = ?, "
-		." dias = ?, "
-		." hora_desde = ?, "
-		." hora_hasta = ? "
-		." where "
-		." codhorario = ?;
-		";
+	if (!empty($_POST['dias'])) {
+		$sql = "DELETE FROM horarios WHERE codhorario = ?;";
 		$stmt = $this->dbh->prepare($sql);
-		$stmt->bindParam(1, $codsucursal);
-		$stmt->bindParam(2, $codmedico);
-		$stmt->bindParam(3, $dias);
-		$stmt->bindParam(4, $hora_desde);
-		$stmt->bindParam(5, $hora_hasta);
-		$stmt->bindParam(6, $codhorario);
-
-		$codsucursal = limpiar(decrypt($_POST["codsucursal"]));
-	    $codmedico = limpiar(decrypt($_POST['codmedico']));
-	    $dias = implode(",",$_POST["dias"]);
-	    $hora_desde = limpiar($_POST["hora_desde"]);
-	    $hora_hasta = limpiar($_POST["hora_hasta"]);
+		$stmt->bindParam(1,$codhorario);
 		$codhorario = limpiar(decrypt($_POST["codhorario"]));
-		$stmt->execute();*/
+		$stmt->execute();
+
+		$sql = "SELECT MAX(codhorario) as codhorario FROM horarios;";
+		$stmt = $this->dbh->query($sql);
+		$codhorario = $stmt->fetch(PDO::FETCH_ASSOC)['codhorario'] + 1;
+		$codsucursal = limpiar(decrypt($_POST["codsucursal"]));
+		$codmedico = limpiar(decrypt($_POST['codmedico']));
+		$hora_desde = limpiar($_POST["hora_desde"]);
+		$hora_hasta = limpiar($_POST["hora_hasta"]);
+	
+		###################### REGISTRO LOS DIAS ######################
+		for($i=0;$i<count($_POST['dias']);$i++){  //recorro el array
+			if (!empty($_POST['dias'][$i])) {
+				$query = " INSERT INTO horarios values (?, ?, ?, ?, ?, ?);";
+				$stmt = $this->dbh->prepare($query);
+				$stmt->bindParam(1, $codhorario);
+				$stmt->bindParam(2, $codsucursal);
+				$stmt->bindParam(3, $codmedico);
+				$stmt->bindParam(4, $dias);
+				$stmt->bindParam(5, $hora_desde);
+				$stmt->bindParam(6, $hora_hasta);
+				$dias = limpiar($_POST["dias"][$i]);
+
+				$stmt->execute();
+			} 
+		}
+	}
 
 	echo "<span class='fa fa-check-square-o'></span> EL HORARIO DEL MEDICO HA SIDO ACTUALIZADO EXITOSAMENTE";
 	exit;
@@ -4811,14 +4735,10 @@ public function EliminarHorarios()
 	self::SetNames();
   if($_SESSION['acceso'] == "administrador" || $_SESSION["acceso"]=="secretaria") {
 
-		$sql = "DELETE FROM horarios WHERE codmedico = ? AND hora_desde = ? AND hora_hasta = ?;";
+		$sql = "DELETE FROM horarios WHERE codhorario = ?;";
 		$stmt = $this->dbh->prepare($sql);
-		$stmt->bindParam(1,$codmedico);
-		$stmt->bindParam(2,$desde);
-		$stmt->bindParam(3,$hasta);
-		$codmedico = $_GET["codmedico"];
-		$desde = $_GET["desde"];
-		$hasta = $_GET["hasta"];
+		$stmt->bindParam(1,$codhorario);
+		$codhorario = $_GET["codhorario"];	
 		$stmt->execute();
 
 		echo "1";
@@ -4902,26 +4822,6 @@ public function BuscarHorarioxMedico()
 ################################ FUNCION BUSQUEDA HORARIO POR MEDICO ################################
 
 ############################# FIN DE CLASE HORARIOS ################################
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -7504,7 +7404,7 @@ public function BusquedaAperturas()
 
 ############################# FUNCION REGISTRAR APERTURAS ##############################
 public function RegistrarAperturas()
-	{
+{
 	self::SetNames();
 	if(empty($_POST["codcita"]) or empty($_POST["sucursal_busqueda"]) or empty($_POST["medico_busqueda"]) or empty($_POST["codpaciente"]))
 	{
@@ -7512,68 +7412,65 @@ public function RegistrarAperturas()
 		exit;
 	}
 
-    ################# VERIFICO NO EXISTAN PRESUNTIVOS REPETIDOS ##############
+	################# VERIFICO NO EXISTAN PRESUNTIVOS REPETIDOS ##############
 	$presuntivo = $_POST['presuntivo'];
-    $repeated = array_filter(array_count_values($presuntivo), function($count) {
-    return $count > 1;
-    });
+	$repeated = array_filter(array_count_values($presuntivo), function($count) {
+	return $count > 1;
+	});
 
-    foreach ($repeated as $key => $value) {
-        echo "2";
+	foreach ($repeated as $key => $value) {
+			echo "2";
 		exit;
-    }
-    ################# VERIFICO NO EXISTAN PRESUNTIVOS REPETIDOS ##############
-		
-    ################# VERIFICO NO EXISTAN DEFINITIVOS REPETIDOS ##############
-    $definitivo = $_POST['definitivo'];
-    $repeated = array_filter(array_count_values($definitivo), function($count) {
-    return $count > 1;
-    });
+	}
+	################# VERIFICO NO EXISTAN PRESUNTIVOS REPETIDOS ##############
+	
+	################# VERIFICO NO EXISTAN DEFINITIVOS REPETIDOS ##############
+	$definitivo = $_POST['definitivo'];
+	$repeated = array_filter(array_count_values($definitivo), function($count) {
+	return $count > 1;
+	});
 
-    foreach ($repeated as $key => $value) {
-        echo "3";
-	    exit;
-    }
-    ################# VERIFICO NO EXISTAN DEFINITIVOS REPETIDOS ##############	
+	foreach ($repeated as $key => $value) {
+			echo "3";
+		exit;
+	}
+	################# VERIFICO NO EXISTAN DEFINITIVOS REPETIDOS ##############	
 
 	################# VERIFICO NO EXISTAN FORMULAS REPETIDAS ##############
 	if (limpiar(isset($_POST['idcieformula']))) { 
+		$formula = $_POST['idcieformula'];
+			$repeated = array_filter(array_count_values($formula), function($count) {
+			return $count > 1;
+		});
 
-	    $formula = $_POST['idcieformula'];
-        $repeated = array_filter(array_count_values($formula), function($count) {
-        return $count > 1;
-        });
+		foreach ($repeated as $key => $value) {
+			echo "4";
+			exit;
+		}
+	}
+	################# VERIFICO NO EXISTAN FORMULAS REPETIDAS ##############    	
 
-         foreach ($repeated as $key => $value) {
-            echo "4";
-		    exit;
-        }
-    }
-    ################# VERIFICO NO EXISTAN FORMULAS REPETIDAS ##############    	
+	################# VERIFICO NO EXISTAN ORDENES REPETIDAS ##############
+	if (limpiar(isset($_POST['idcieorden']))) {
+			$orden = $_POST['idcieorden'];
+			$repeated = array_filter(array_count_values($orden), function($count) {
+				return $count > 1;
+			});
 
-    ################# VERIFICO NO EXISTAN ORDENES REPETIDAS ##############
-    if (limpiar(isset($_POST['idcieorden']))) {
-        
-        $orden = $_POST['idcieorden'];
-        $repeated = array_filter(array_count_values($orden), function($count) {
-        return $count > 1;
-        });
-
-        foreach ($repeated as $key => $value) {
-            echo "5";
-		    exit;
-        }
-    }
-    ################# VERIFICO NO EXISTAN ORDENES REPETIDAS ##############
+			foreach ($repeated as $key => $value) {
+				echo "5";
+				exit;
+			}
+	}
+	################# VERIFICO NO EXISTAN ORDENES REPETIDAS ##############
 
 	################ CREO CODIGO DE APERTURA ####################
-	$sql = "SELECT codapertura FROM aperturas 
-	ORDER BY idapertura DESC LIMIT 1";
+	$sql = "SELECT codapertura FROM aperturas  ORDER BY idapertura DESC LIMIT 1";
+
 	foreach ($this->dbh->query($sql) as $row){
-
 		$apertura=$row["codapertura"];
-
 	}
+
 	if(empty($apertura))
 	{
 		$codapertura = "A1";
@@ -7588,60 +7485,33 @@ public function RegistrarAperturas()
 	}
     ################ CREO CODIGO DE APERTURA ###############
 
-    ################ CREO DOCUMENTO DE APERTURA ####################
+  ################ CREO DOCUMENTO DE APERTURA ####################
 	$sql = "SELECT nrodocumento FROM aperturas 
-	WHERE codsucursal = '".limpiar(decrypt($_POST["sucursal_busqueda"]))."'
-	ORDER BY idapertura DESC LIMIT 1";
+					WHERE codsucursal = '".limpiar(decrypt($_POST["sucursal_busqueda"]))."'
+					ORDER BY idapertura DESC LIMIT 1";
+
 	foreach ($this->dbh->query($sql) as $row){
-
 		$documento=$row["nrodocumento"];
-
 	}
 	if(empty($documento))
 	{
 		$nrodocumento = "01";
 
 	} else {
-
 		$num = substr($documento, 0);
-        $digitos = $num + 1;
-        $numfinal = str_pad($digitos, 2, "0", STR_PAD_LEFT);
-        $nrodocumento = $numfinal;
+		$digitos = $num + 1;
+		$numfinal = str_pad($digitos, 2, "0", STR_PAD_LEFT);
+		$nrodocumento = $numfinal;
 	}
-    ################ CREO DOCUMENTO DE APERTURA ###############
+	################ CREO DOCUMENTO DE APERTURA ###############
 
-    $fecha_hora = date("Y-m-d H:i:s");
+  $fecha_hora = date("Y-m-d H:i:s");
 
-    $sql = "SELECT * FROM aperturas WHERE codsucursal = ? AND codpaciente = ?";
+  $sql = "SELECT * FROM aperturas WHERE codsucursal = ? AND codpaciente = ?";
 	$stmt = $this->dbh->prepare($sql);
 	$stmt->execute(array(decrypt($_POST["sucursal_busqueda"]),decrypt($_POST["codpaciente"])));
 	$num = $stmt->rowCount();
-	if($num == 0)
-	{
-
-		############################# REGISTRO DE APERTURA MEDICA #############################
-	    $query = "INSERT INTO aperturas values (null, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?); ";
-		$stmt = $this->dbh->prepare($query);
-		$stmt->bindParam(1, $codapertura);
-		$stmt->bindParam(2, $nrodocumento);
-		$stmt->bindParam(3, $codcita);
-		$stmt->bindParam(4, $codsucursal);
-		$stmt->bindParam(5, $codmedico);
-		$stmt->bindParam(6, $codpaciente);
-		$stmt->bindParam(7, $enfermedadpaciente);
-		$stmt->bindParam(8, $antecedentepaciente);
-		$stmt->bindParam(9, $antecedentefamiliares);
-		$stmt->bindParam(10, $antecedentealergico);
-		$stmt->bindParam(11, $antecedentepatologico);
-		$stmt->bindParam(12, $antecedentequirurgico);
-		$stmt->bindParam(13, $antecedentefarmacologico);
-		$stmt->bindParam(14, $antecedenteginecologico);
-		$stmt->bindParam(15, $historialgestacional);
-		$stmt->bindParam(16, $planificacionfamiliar);
-		$stmt->bindParam(17, $fechaapertura);
-		$stmt->bindParam(18, $codigo);			
-		$stmt->bindParam(19, $modulo);	
-			
+	if($num == 0) {
 		$codcita = limpiar(decrypt($_POST["codcita"]));
 		$codsucursal = limpiar(decrypt($_POST["sucursal_busqueda"]));
 		$codmedico = limpiar(decrypt($_POST["medico_busqueda"]));
@@ -7653,16 +7523,99 @@ public function RegistrarAperturas()
 		$antecedentepatologico = limpiar($_POST["antecedentepatologico"]);
 		$antecedentequirurgico = limpiar($_POST["antecedentequirurgico"]);
 		$antecedentefarmacologico = limpiar($_POST["antecedentefarmacologico"]);
-        $antecedenteginecologico = limpiar(isset($_POST['antecedenteginecologico']) ? $_POST["antecedenteginecologico"] : "");
-        $historialgestacional = limpiar(isset($_POST['historialgestacional']) ? $_POST["historialgestacional"] : "");
-        $planificacionfamiliar = limpiar(isset($_POST['planificacionfamiliar']) ? $_POST["planificacionfamiliar"] : "");
+		$antecedenteginecologico = limpiar(isset($_POST['antecedenteginecologico']) ? $_POST["antecedenteginecologico"] : "");
+		$historialgestacional = limpiar(isset($_POST['historialgestacional']) ? $_POST["historialgestacional"] : "");
+    $planificacionfamiliar = limpiar(isset($_POST['planificacionfamiliar']) ? $_POST["planificacionfamiliar"] : "");
 		$fechaapertura = $fecha_hora;
 		$codigo = limpiar($_SESSION["codigo"]);
 		$modulo = limpiar($_POST['modulo']);
-		$stmt->execute();
-		############################# REGISTRO DE APERTURA MEDICA #############################
+		$talla = limpiar($_POST['talla']);
+		$imc = limpiar($_POST['imc']);
 
+		############################# REGISTRO DE APERTURA MEDICA #############################
+	  $query = "INSERT INTO aperturas (codapertura, nrodocumento, codcita, codsucursal, codmedico, codpaciente,
+								enfermedadpaciente, antecedentepaciente, antecedentefamiliares, antecedentealergico, 
+								antecedentepatologico, antecedentequirurgico, antecedentefarmacologico, antecedenteginecologico, 
+								historialgestacional, planificacionfamiliar, fechaapertura, codigo, modulo, talla, imc)
+							VALUES (:codapertura, :nrodocumento, :codcita, :codsucursal, :codmedico, :codpaciente,
+								:enfermedadpaciente, :antecedentepaciente, :antecedentefamiliares, :antecedentealergico, 
+								:antecedentepatologico, :antecedentequirurgico, :antecedentefarmacologico, :antecedenteginecologico,
+								:historialgestacional, :planificacionfamiliar, :fechaapertura, :codigo, :modulo, :talla, :imc); ";
+
+		$stmt = $this->dbh->prepare($query);
+		$stmt->bindParam(":codapertura", $codapertura);
+		$stmt->bindParam(":nrodocumento", $nrodocumento);
+		$stmt->bindParam(":codcita", $codcita);
+		$stmt->bindParam(":codsucursal", $codsucursal);
+		$stmt->bindParam(":codmedico", $codmedico);
+		$stmt->bindParam(":codpaciente", $codpaciente);
+		$stmt->bindParam(":enfermedadpaciente", $enfermedadpaciente);
+		$stmt->bindParam(":antecedentepaciente", $antecedentepaciente);
+		$stmt->bindParam(":antecedentefamiliares", $antecedentefamiliares);
+		$stmt->bindParam(":antecedentealergico", $antecedentealergico);
+		$stmt->bindParam(":antecedentepatologico", $antecedentepatologico);
+		$stmt->bindParam(":antecedentequirurgico", $antecedentequirurgico);
+		$stmt->bindParam(":antecedentefarmacologico", $antecedentefarmacologico);
+		$stmt->bindParam(":antecedenteginecologico", $antecedenteginecologico);
+		$stmt->bindParam(":historialgestacional", $historialgestacional);
+		$stmt->bindParam(":planificacionfamiliar", $planificacionfamiliar);
+		$stmt->bindParam(":fechaapertura", $fechaapertura);
+		$stmt->bindParam(":codigo", $codigo);			
+		$stmt->bindParam(":modulo", $modulo);	
+		$stmt->bindParam(":talla", $talla);	
+		$stmt->bindParam(":imc", $imc);	
+
+		$stmt->execute();
+
+	############################# REGISTRO DE APERTURA MEDICA #############################
+	$oHojaEvolutiva = new stdClass();
+	
+	$oHojaEvolutiva->nrodocumento = $nrodocumento;
+	$oHojaEvolutiva->codcita = $codcita;
+	$oHojaEvolutiva->codsucursal = $codsucursal;
+	$oHojaEvolutiva->codmedico = $codmedico;
+	$oHojaEvolutiva->codpaciente = $codpaciente;
+	$oHojaEvolutiva->codprocedimiento = $nrodocumento;
+	$oHojaEvolutiva->procedimiento = 'APERTURA';
+	$oHojaEvolutiva->motivoconsulta = $_POST['motivoconsulta'];
+	$oHojaEvolutiva->examenfisico = $_POST['examenfisico'];
+	$oHojaEvolutiva->semanas = null;
+	$oHojaEvolutiva->atenproced =
+	$oHojaEvolutiva->ta = $_POST['ta'];
+	$oHojaEvolutiva->temperatura = $_POST['temperatura'];
+	$oHojaEvolutiva->fc = $_POST['fc'];
+	$oHojaEvolutiva->fr = $_POST['fr'];
+	$oHojaEvolutiva->peso = $_POST['peso'];
+
+	AddHojaEvolutiva($oHojaEvolutiva);
+
+/*
 	################ CREO CODIGO DE HOJA EVOLUTIVA ####################
+	$stmt->bindValue(":nrodocumento", $oDatos.nrodocumento);
+		$stmt->bindValue(":codcita", $oDatos.codcita);
+		$stmt->bindValue(":codsucursal", $oDatos.codsucursal);
+		$stmt->bindValue(":codmedico", $oDatos.codmedico);
+		$stmt->bindValue(":codpaciente", $oDatos.codpaciente);
+		$stmt->bindValue(":codprocedimiento", $oDatos.codprocedimiento);
+		$stmt->bindValue(":procedimiento", $oDatos.procedimiento);
+		$stmt->bindValue(":motivoconsulta", $oDatos.motivoconsulta);
+		$stmt->bindValue(":examenfisico", $oDatos.examenfisico);
+		$stmt->bindValue(":semanas", $oDatos.semanas);
+		$stmt->bindValue(":atenproced", $oDatos.atenproced);
+		$stmt->bindValue(":ta", $oDatos.ta);
+		$stmt->bindValue(":temperatura", $oDatos.temperatura);
+		$stmt->bindValue(":fc", $oDatos.fc);
+		$stmt->bindValue(":fr", $oDatos.fr);
+		$stmt->bindValue(":peso", $oDatos.peso);
+		$stmt->bindValue(":dxpresuntivo", $oDatos.dxpresuntivo);
+		$stmt->bindValue(":dxdefinitivo", $oDatos.dxdefinitivo);
+		$stmt->bindValue(":origenenfermedad", $oDatos.origenenfermedad);
+		$stmt->bindValue(":tratamiento", $oDatos.tratamiento);
+		$stmt->bindValue(":fechahoja", $oDatos.fechahoja);
+		$stmt->bindValue(":codigo", $oDatos.codigo);
+		$stmt->bindValue(":modulo", $oDatos.modulo);
+		$stmt->bindValue(":talla", $oDatos.talla);
+		$stmt->bindValue(":imc", $oDatos.imc);
 	$sql = "SELECT codhoja FROM hojasevolutivas 
 	ORDER BY idhoja DESC LIMIT 1";
 	foreach ($this->dbh->query($sql) as $row){
@@ -7745,12 +7698,12 @@ public function RegistrarAperturas()
 		$procedimiento = limpiar("APERTURA MEDICA");
 		$motivoconsulta = limpiar($_POST['motivoconsulta']);
 		$examenfisico = limpiar($_POST["examenfisico"]);
-        $fechacitologia = limpiar(isset($_POST['fechacitologia']) && $_POST['fechacitologia'] != "" ? date("Y-m-d",strtotime($_POST['fechacitologia'])) : "'0000-00-00'");
-        $embarazada = limpiar(isset($_POST['embarazada']) ? $_POST["embarazada"] : "");
-        $fechamestruacion = limpiar(isset($_POST['fechamestruacion']) ? date("Y-m-d",strtotime($_POST['fechamestruacion'])) : "0000-00-00");
-        $semanas = limpiar(isset($_POST['semanas']) ? $_POST['semanas'] : "");
-        $fechaparto = limpiar(isset($_POST['fechaparto']) ? date("Y-m-d",strtotime($_POST['fechaparto'])) : "0000-00-00");
-        $atenproced = limpiar(isset($_POST['atenproced']) ? $_POST['atenproced'] : "");
+		$fechacitologia = limpiar(isset($_POST['fechacitologia']) && $_POST['fechacitologia'] != "" ? date("Y-m-d",strtotime($_POST['fechacitologia'])) : "'0000-00-00'");
+		$embarazada = limpiar(isset($_POST['embarazada']) ? $_POST["embarazada"] : "");
+		$fechamestruacion = limpiar(isset($_POST['fechamestruacion']) ? date("Y-m-d",strtotime($_POST['fechamestruacion'])) : "0000-00-00");
+		$semanas = limpiar(isset($_POST['semanas']) ? $_POST['semanas'] : "");
+		$fechaparto = limpiar(isset($_POST['fechaparto']) ? date("Y-m-d",strtotime($_POST['fechaparto'])) : "0000-00-00");
+		$atenproced = limpiar(isset($_POST['atenproced']) ? $_POST['atenproced'] : "");
 		$ta = limpiar($_POST["ta"]);
 		$temperatura = limpiar($_POST["temperatura"]);
 		$fc = limpiar($_POST["fc"]);
@@ -7759,14 +7712,21 @@ public function RegistrarAperturas()
 		
 		################# DX PRESUNTIVO #################
 		$cont = 0;
-	    $arrayBD = array();
+		$arrayBD = array();
 		$idciepresuntivo = $_POST["idciepresuntivo"];
-	    $presuntivo = $_POST["presuntivo"];
+		if(count($idciepresuntivo) == 0) {
+			$observacionpresuntivo = null;
+			$dxpresuntivo = null;
+		}
+		else {
+			$presuntivo = $_POST["presuntivo"];
 	    $observacionpresuntivo = $_POST["observacionpresuntivo"];
 	    for($cont; $cont<count($_POST["presuntivo"]); $cont++):
-		$arrayBD[] = trim($idciepresuntivo[$cont]."/".$presuntivo[$cont]."/".$observacionpresuntivo[$cont]."\n");
+				$arrayBD[] = trim($idciepresuntivo[$cont]."/".$presuntivo[$cont]."/".$observacionpresuntivo[$cont]."\n");
 	    endfor;
-		$dxpresuntivo = implode(",,",$arrayBD);
+			$dxpresuntivo = implode(",,",$arrayBD);
+		}
+	    
 		################# DX PRESUNTIVO #################
 		
 		################# DX DEFINITIVO #################
@@ -7780,8 +7740,7 @@ public function RegistrarAperturas()
 	    endfor;
 		$dxdefinitivo = implode(",,",$arrayBD);
         ################# DX DEFINITIVO #################
-		
-		//$origenenfermedad = limpiar($_POST["origenenfermedad"]);
+	
 		$origenenfermedad = "";
 		$tratamiento = limpiar($_POST["tratamiento"]);
 		$fechahoja = $fecha_hora;
@@ -7789,7 +7748,7 @@ public function RegistrarAperturas()
 		$modulo = limpiar($_POST['modulo']);
 		$stmt->execute();
 		############################# REGISTRO DE HOJA EVOLUTIVA ############################# 
-
+*/
 		############################# REGISTRO DE FORMULA MEDICA #############################
 		if (array_filter($_POST['idcieformula'])) { 
 
@@ -9563,25 +9522,11 @@ public function BuscarAperturasxPaciente()
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 ##################################### CLASE HOJA EVOLUTIVA ########################################
 
 ############################# FUNCION REGISTRAR HOJAS ##############################
 public function RegistrarHojasEvolutivas()
-	{
+{
 	self::SetNames();
 	if(empty($_POST["codcita"]) or empty($_POST["sucursal_busqueda"]) or empty($_POST["medico_busqueda"]) or empty($_POST["codpaciente"]))
 	{
@@ -9589,149 +9534,109 @@ public function RegistrarHojasEvolutivas()
 		exit;
 	}
 
-    ################# VERIFICO NO EXISTAN PRESUNTIVOS REPETIDOS ##############
+	################# VERIFICO NO EXISTAN PRESUNTIVOS REPETIDOS ##############
 	$presuntivo = $_POST['presuntivo'];
-    $repeated = array_filter(array_count_values($presuntivo), function($count) {
-    return $count > 1;
-    });
+	$repeated = array_filter(array_count_values($presuntivo), function($count) {
+	return $count > 1;
+	});
 
-    foreach ($repeated as $key => $value) {
-        echo "2";
-		exit;
-    }
-    ################# VERIFICO NO EXISTAN PRESUNTIVOS REPETIDOS ##############
+	foreach ($repeated as $key => $value) {
+			echo "2";
+	exit;
+	}
+	################# VERIFICO NO EXISTAN PRESUNTIVOS REPETIDOS ##############
 		
-    ################# VERIFICO NO EXISTAN DEFINITIVOS REPETIDOS ##############
-    $definitivo = $_POST['definitivo'];
-    $repeated = array_filter(array_count_values($definitivo), function($count) {
-    return $count > 1;
-    });
+	################# VERIFICO NO EXISTAN DEFINITIVOS REPETIDOS ##############
+	$definitivo = $_POST['definitivo'];
+	$repeated = array_filter(array_count_values($definitivo), function($count) {
+	return $count > 1;
+	});
 
-    foreach ($repeated as $key => $value) {
-        echo "3";
-	    exit;
-    }
-    ################# VERIFICO NO EXISTAN DEFINITIVOS REPETIDOS ##############	
+	foreach ($repeated as $key => $value) {
+			echo "3";
+		exit;
+	}
+	################# VERIFICO NO EXISTAN DEFINITIVOS REPETIDOS ##############	
 
 	################# VERIFICO NO EXISTAN FORMULAS REPETIDAS ##############
 	if (limpiar(isset($_POST['idcieformula']))) { 
-
-	    $formula = $_POST['idcieformula'];
-        $repeated = array_filter(array_count_values($formula), function($count) {
-        return $count > 1;
-        });
-
-         foreach ($repeated as $key => $value) {
-            echo "4";
-		    exit;
-        }
-    }
-    ################# VERIFICO NO EXISTAN FORMULAS REPETIDAS ##############    	
-
-    ################# VERIFICO NO EXISTAN ORDENES REPETIDAS ##############
-    if (limpiar(isset($_POST['idcieorden']))) {
-        
-        $orden = $_POST['idcieorden'];
-        $repeated = array_filter(array_count_values($orden), function($count) {
-        return $count > 1;
-        });
-
-        foreach ($repeated as $key => $value) {
-            echo "5";
-		    exit;
-        }
-    }
-    ################# VERIFICO NO EXISTAN ORDENES REPETIDAS ##############
-
-	################ CREO CODIGO DE HOJA EVOLUTIVA ####################
-	$sql = "SELECT codhoja FROM hojasevolutivas 
-	ORDER BY idhoja DESC LIMIT 1";
-	foreach ($this->dbh->query($sql) as $row){
-
-		$hoja=$row["codhoja"];
-
+		$formula = $_POST['idcieformula'];
+			$repeated = array_filter(array_count_values($formula), function($count) {
+				return $count > 1;
+			});
+			foreach ($repeated as $key => $value) {
+				echo "4";
+				exit;
+			}
 	}
-	if(empty($hoja))
-	{
-		$codhoja = "H1";
+	################# VERIFICO NO EXISTAN FORMULAS REPETIDAS ##############    	
 
-	} else {
-
-		$resto = substr($hoja, 0, 1);
-		$coun = strlen($resto);
-		$num     = substr($hoja, $coun);
-		$codigofinal     = $num + 1;
-		$codhoja = "H".$codigofinal;
+	################# VERIFICO NO EXISTAN ORDENES REPETIDAS ##############
+	if (limpiar(isset($_POST['idcieorden']))) {
+		$orden = $_POST['idcieorden'];
+		$repeated = array_filter(array_count_values($orden), function($count) {
+		return $count > 1;
+		});
+		foreach ($repeated as $key => $value) {
+				echo "5";
+		exit;
+		}
 	}
-    ################ CREO CODIGO DE HOJA EVOLUTIVA ###############
+	################# VERIFICO NO EXISTAN ORDENES REPETIDAS ##############
 
     ################ CREO DOCUMENTO DE HOJA EVOLUTIVA ####################
 	$sql = "SELECT nrodocumento FROM hojasevolutivas 
-	WHERE codsucursal = '".limpiar(decrypt($_POST["sucursal_busqueda"]))."'
-	ORDER BY idhoja DESC LIMIT 1";
+					WHERE codsucursal = '".limpiar(decrypt($_POST["sucursal_busqueda"]))."'
+					ORDER BY idhoja DESC LIMIT 1";
+
 	foreach ($this->dbh->query($sql) as $row){
-
-		$documento=$row["nrodocumento"];
-
+		$documento = $row["nrodocumento"];
 	}
 	if(empty($documento))
 	{
 		$nrodocumento = "01";
-
 	} else {
-
 		$num = substr($documento, 0);
-        $digitos = $num + 1;
-        $numfinal = str_pad($digitos, 2, "0", STR_PAD_LEFT);
-        $nrodocumento = $numfinal;
+		$digitos = $num + 1;
+		$numfinal = str_pad($digitos, 2, "0", STR_PAD_LEFT);
+		$nrodocumento = $numfinal;
 	}
-    ################ CREO DOCUMENTO DE HOJA EVOLUTIVA ###############
+	################ CREO DOCUMENTO DE HOJA EVOLUTIVA ###############
 
-    $fecha_hora = date("Y-m-d H:i:s");
+	$fecha_hora = date("Y-m-d H:i:s");
 
-    $sql = "SELECT * FROM aperturas WHERE codsucursal = ? AND codpaciente = ?";
+	$sql = "SELECT * FROM aperturas WHERE codsucursal = ? AND codpaciente = ?";
+	
 	$stmt = $this->dbh->prepare($sql);
 	$stmt->execute(array(decrypt($_POST["sucursal_busqueda"]),decrypt($_POST["codpaciente"])));
+	
 	$num = $stmt->rowCount();
+	
 	if($num > 0)
 	{
-
 		############################# REGISTRO DE HOJA EVOLUTIVA #############################
-		$query = "INSERT INTO hojasevolutivas values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?); ";
-		$stmt = $this->dbh->prepare($query);
-		$stmt->bindParam(1, $num);
-		$stmt->bindParam(2, $codhoja);
-		$stmt->bindParam(3, $nrodocumento);
-		$stmt->bindParam(4, $codcita);
-		$stmt->bindParam(5, $codsucursal);
-		$stmt->bindParam(6, $codmedico);
-		$stmt->bindParam(7, $codpaciente);
-		$stmt->bindParam(8, $codprocedimiento);
-		$stmt->bindParam(9, $procedimiento);
-		$stmt->bindParam(10, $motivoconsulta);
-		$stmt->bindParam(11, $examenfisico);
-		$stmt->bindParam(12, $semanas);
-		$stmt->bindParam(13, $atenproced);
-		$stmt->bindParam(14, $ta);
-		$stmt->bindParam(15, $temperatura);
-		$stmt->bindParam(16, $fc);
-		$stmt->bindParam(17, $fr);
-		$stmt->bindParam(18, $peso);
-		$stmt->bindParam(19, $dxpresuntivo);
-		$stmt->bindParam(20, $dxdefinitivo);
-		$stmt->bindParam(21, $origenenfermedad);
-		$stmt->bindParam(22, $tratamiento);
-		$stmt->bindParam(23, $fechahoja);
-		$stmt->bindParam(24, $codigo);
-		$stmt->bindParam(25, $modulo);
-		
+
 		$codhoja = limpiar(decrypt($_POST["codhoja"]));
+		if(empty($codhoja)) {
+			$sql = "SELECT codhoja FROM hojasevolutivas ORDER BY idhoja DESC LIMIT 1;";
+
+			$stmt = $this->dbh->query($sql);
+			$stmt->execute();
+			$hoja = $stmt->fetch(PDO::FETCH_ASSOC)['codhoja'];
+			if(empty($hoja))
+			{
+				$codhoja = "H1";
+			} else {
+				$codhoja = "H" . intval(substr($hoja, 1)) + 1;
+			}
+		}
+
 		$codcita = limpiar(decrypt($_POST["codcita"]));
 		$codsucursal = limpiar(decrypt($_POST["sucursal_busqueda"]));
 		$codmedico = limpiar(decrypt($_POST["medico_busqueda"]));
 		$codpaciente = limpiar(decrypt($_POST["codpaciente"]));
-		$codprocedimiento = limpiar("0");
-		$procedimiento = limpiar("HOJA EVOLUTIVA");
+		$codprocedimiento = "0";
+		$procedimiento = "HOJA EVOLUTIVA";
 		$motivoconsulta = limpiar($_POST['motivoconsulta']);
 		$examenfisico = limpiar($_POST["examenfisico"]);
 		$semanas = limpiar(isset($_POST['semanas']) ? $_POST['semanas'] : "");
@@ -9741,32 +9646,78 @@ public function RegistrarHojasEvolutivas()
 		$fc = limpiar($_POST["fc"]);
 		$fr = limpiar($_POST["fr"]);
 		$peso = limpiar($_POST["peso"]);
+		$talla = limpiar($_POST["talla"]);
+		$imc = limpiar($_POST["imc"]);
 		
 		################# DX PRESUNTIVO #################
+		$dxpresuntivo = null;
 		$cont = 0;
-	    $arrayBD = array();
+		$arrayBD = array();
 		$idciepresuntivo = $_POST["idciepresuntivo"];
 		for($cont; $cont<count($_POST["presuntivo"]); $cont++):
 			$arrayBD[] = trim($idciepresuntivo[$cont]."/".$presuntivo[$cont]."\n");
-	  endfor;
+		endfor;
 		$dxpresuntivo = implode(",,",$arrayBD);
+		
 		################# DX PRESUNTIVO #################
 		
 		################# DX DEFINITIVO #################
+		$dxdefinitivo = null;
 		$cont = 0;
-	  $arrayBD = array();
+		$arrayBD = array();
 		$idciedefinitivo = $_POST["idciedefinitivo"];
-	  for($cont; $cont<count($_POST["definitivo"]); $cont++):
+		for($cont; $cont<count($_POST["definitivo"]); $cont++):
 			$arrayBD[] = trim($idciedefinitivo[$cont]."/".$definitivo[$cont]."\n");
-	  endfor;
+		endfor;
 		$dxdefinitivo = implode(",,",$arrayBD);
-        ################# DX DEFINITIVO #################
+		
+    ################# DX DEFINITIVO #################
 		
 		$origenenfermedad = isset($_POST["origenenfermedad"]) ? $_POST["origenenfermedad"] : null;
 		$tratamiento = limpiar($_POST["tratamiento"]);
 		$fechahoja = $fecha_hora;
 		$codigo = limpiar($_SESSION["codigo"]);
 		$modulo = limpiar($_POST['modulo']);
+		
+		$query = "INSERT INTO hojasevolutivas (idhoja, codhoja, nrodocumento, codcita, codsucursal,
+								codmedico, codpaciente, codprocedimiento, procedimiento, motivoconsulta, examenfisico,
+								semanas, atenproced, ta, temperatura, fc, fr, peso, dxpresuntivo, dxdefinitivo,
+								origenenfermedad, tratamiento, fechahoja, codigo, modulo, talla, imc) 
+							VALUES (:idhoja, :codhoja, :nrodocumento, :codcita, :codsucursal,
+								:codmedico, :codpaciente, :codprocedimiento, :procedimiento, :motivoconsulta, :examenfisico,
+								:semanas, :atenproced, :ta, :temperatura, :fc, :fr, :peso, :dxpresuntivo, :dxdefinitivo,
+								:origenenfermedad, :tratamiento, :fechahoja, :codigo, :modulo, :talla, :imc);";
+		
+		$stmt = $this->dbh->prepare($query);
+
+		$stmt->bindValue(":idhoja", $num);
+		$stmt->bindValue(":codhoja", $codhoja);
+		$stmt->bindValue(":nrodocumento", $nrodocumento);
+		$stmt->bindValue(":codcita", $codcita);
+		$stmt->bindValue(":codsucursal", $codsucursal);
+		$stmt->bindValue(":codmedico", $codmedico);
+		$stmt->bindValue(":codpaciente", $codpaciente);
+		$stmt->bindValue(":codprocedimiento", $codprocedimiento);
+		$stmt->bindValue(":procedimiento", $procedimiento);
+		$stmt->bindValue(":motivoconsulta", $motivoconsulta);
+		$stmt->bindValue(":examenfisico", $examenfisico);
+		$stmt->bindValue(":semanas", $semanas);
+		$stmt->bindValue(":atenproced", $atenproced);
+		$stmt->bindValue(":ta", $ta);
+		$stmt->bindValue(":temperatura", $temperatura);
+		$stmt->bindValue(":fc", $fc);
+		$stmt->bindValue(":fr", $fr);
+		$stmt->bindValue(":peso", $peso);
+		$stmt->bindValue(":dxpresuntivo", $dxpresuntivo);
+		$stmt->bindValue(":dxdefinitivo", $dxdefinitivo);
+		$stmt->bindValue(":origenenfermedad", $origenenfermedad);
+		$stmt->bindValue(":tratamiento", $tratamiento);
+		$stmt->bindValue(":fechahoja", $fechahoja);
+		$stmt->bindValue(":codigo", $codigo);
+		$stmt->bindValue(":modulo", $modulo);
+		$stmt->bindValue(":talla", $talla);
+		$stmt->bindValue(":imc", $imc);
+
 		$stmt->execute();
 		############################# REGISTRO DE HOJA EVOLUTIVA #############################
 

@@ -414,6 +414,20 @@ exit;
                     <input class="form-control" type="text" name="peso" id="peso" onKeyUp="this.value=this.value.toUpperCase();" autocomplete="off" placeholder="Ingrese Peso" <?php if (isset($reg[0]['peso'])) { ?> value="<?php echo $reg[0]['peso']; ?>" <?php } ?> required="" aria-required="true">
                 </div> 
             </div>
+
+            <div class="col-md-3"> 
+                <div class="form-group has-feedback"> 
+                    <label class="control-label">Talla:</label> 
+                    <input class="form-control" type="numeric" name="talla" id="talla" placeholder="Ingrese Talla" <?php if (isset($reg[0]['talla'])) { ?> value="<?php echo $reg[0]['talla']; ?>" <?php } ?>>
+                </div> 
+            </div>
+
+            <div class="col-md-3"> 
+                <div class="form-group has-feedback"> 
+                    <label class="control-label">IMC = (Peso/Talla)^2</label> 
+                    <input class="form-control" type="numeric" name="imc" id="imc" <?php if (isset($reg[0]['imc'])) { ?> value="<?php echo $reg[0]['imc']; ?>" <?php } ?> readonly>
+                </div> 
+            </div>
         </div> 
 
         <hr><h5 class="card-subtitle text-dark alert-link"><i data-feather="file-text"></i> Diagnóstico de la Enfermedad o Accidente</h5><hr>
@@ -703,8 +717,17 @@ exit;
     <script>
         $(document).ready(function() {
             App.init();
+
+            // calculo de talla
+            $("#talla").on( "blur", function() {
+                let peso = $("#peso").val();
+                let talla = $("#talla").val();
+
+                $("#imc").val(Math.pow(peso / talla, 2).toFixed(2));
+            });
         });
     </script>
+
     <script src="assets/js/custom.js"></script>
     <script src="plugins/dropify/dropify.min.js"></script>
     <script src="plugins/blockui/jquery.blockUI.min.js"></script>

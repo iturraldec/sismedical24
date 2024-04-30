@@ -172,7 +172,7 @@ $ses = $tra->ExpiraSession();
     <script type="text/jscript">
     $('#hojas').append('<center><i data-feather="settings"></i> Por favor espere, cargando registros ......</center>').fadeIn("slow");
     setTimeout(function() {
-    $('#hojas').load("consultas?CargaHojas=si&url=<?php echo encrypt("2"); ?>");
+    $('#hojas').load("consultas.php?CargaHojas=si&url=<?php echo encrypt("2"); ?>");
      }, 200);
     </script>
     <!-- jQuery Noty-->

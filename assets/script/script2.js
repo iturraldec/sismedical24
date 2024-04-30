@@ -1639,7 +1639,7 @@ function UpdateHorario(codhorario,codsucursal,hora_desde,hora_hasta,proceso)
 }
 
 /////FUNCION PARA ELIMINAR HORARIOS 
-function EliminarHorario(tipo, medico, desde, hasta) {
+function EliminarHorario(tipo, codhorario) {
           swal({
           title: "¿Estás seguro?", 
           text: "¿Estás seguro de Eliminar este Horario de Médico?", 
@@ -1654,7 +1654,7 @@ function EliminarHorario(tipo, medico, desde, hasta) {
              $.ajax({
                   type: "GET",
                   url: "eliminar.php",
-                  data: "codmedico="+medico+"&desde="+desde+"&hasta="+hasta+"&tipo="+tipo,
+                  data: "tipo="+tipo+"&codhorario="+codhorario,
                   success: function(data){
 
          if(data==1){
@@ -2534,7 +2534,7 @@ function EliminarHoja(codhoja,url,tipo) {
          if(data==1){
 
             swal("Eliminado!", "Datos eliminados con éxito!", "success");
-            $('#hojas').load("consultas?CargaHojas=si&url="+url);
+            $('#hojas').load("consultas.php?CargaHojas=si&url="+url);
                   
           } else if(data==2){ 
 
